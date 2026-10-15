@@ -1,0 +1,334 @@
+[
+  {
+    "id": "pm-kisan",
+    "name": "PM-KISAN (Pradhan Mantri Kisan Samman Nidhi)",
+    "category": "income-support",
+    "description": "Central government scheme providing direct income support of ₹6,000 per year, paid in three installments of ₹2,000, to landholding farmer families to help meet agricultural and household expenses.",
+    "eligibilityCriteria": [
+      "Farmer family (self, spouse, minor children) owns cultivable land as per state land records",
+      "Land must be registered in the farmer's name in state/revenue records",
+      "Excludes institutional landholders, serving/retired government employees above Class IV, income-tax payers, and professionals (doctors, engineers, lawyers, CAs)",
+      "Small and marginal farmers owning up to 2 hectares are the primary target group"
+    ],
+    "requiredDocuments": [
+      "Aadhaar card (linked to bank account / NPCI-seeded)",
+      "Land ownership records (state revenue/land records)",
+      "Bank account passbook",
+      "Farmer registration / Farmer ID where applicable"
+    ],
+    "tags": [
+      "income support",
+      "small farmer",
+      "marginal farmer",
+      "land ownership",
+      "cash transfer"
+    ],
+    "applicability": [
+      "any crop including wheat rice cotton sugarcane maize pulses oilseeds vegetables",
+      "rainfed or irrigated land",
+      "small and marginal holding under 2 acres and larger holdings",
+      "all states and districts across India",
+      "low annual income households needing income support"
+    ],
+    "freshness": {
+      "sourceUrl": null,
+      "lastVerified": null,
+      "benefitAmount": {
+        "summary": "₹6,000 per year, paid in three installments of ₹2,000",
+        "figures": {
+          "perYearInr": 6000,
+          "installments": 3,
+          "perInstallmentInr": 2000
+        },
+        "origin": "This app's own scheme notes; not yet checked against the official source."
+      },
+      "todo": [
+        "Add the official source URL (sourceUrl).",
+        "After checking this scheme against that source, record the date (lastVerified, YYYY-MM-DD).",
+        "Check the benefit amount and installment schedule (our notes: ₹6,000 a year in three installments of ₹2,000).",
+        "Check the exclusion list (institutional landholders, government employees above Class IV, income-tax payers, registered professionals).",
+        "Check the '2 hectares = primary target group' wording and the documents list (Farmer ID 'where applicable')."
+      ]
+    }
+  },
+  {
+    "id": "kcc",
+    "name": "Kisan Credit Card (KCC)",
+    "category": "credit",
+    "description": "Government-backed credit facility giving farmers short-term loans at subsidised interest rates for crop production, post-harvest expenses, and allied activities like animal husbandry and fisheries, without requiring collateral up to a threshold.",
+    "eligibilityCriteria": [
+      "Farmers who own or cultivate agricultural land (owner-cultivators, tenant farmers, sharecroppers)",
+      "PM-KISAN beneficiaries are eligible to apply through the PM-KISAN portal or bank branch",
+      "Loans up to a set limit (commonly cited around ₹3 lakh) available without collateral",
+      "Repayment flexibility aligned with crop cycles"
+    ],
+    "requiredDocuments": [
+      "Aadhaar card and PAN (or Form 60)",
+      "Land ownership or cultivation records",
+      "Passport-size photograph",
+      "Bank account details"
+    ],
+    "tags": [
+      "credit",
+      "short-term loan",
+      "crop loan",
+      "collateral-free",
+      "animal husbandry",
+      "fisheries"
+    ],
+    "applicability": [
+      "short term crop loan for seeds fertiliser pesticide and sowing costs",
+      "working capital for any crop wheat rice cotton sugarcane maize pulses",
+      "irrigated canal tubewell drip sprinkler or rainfed land",
+      "small marginal and medium holdings",
+      "purpose cultivation inputs animal husbandry fisheries"
+    ],
+    "freshness": {
+      "sourceUrl": null,
+      "lastVerified": null,
+      "benefitAmount": {
+        "summary": "Short-term crop loans; collateral-free up to a limit commonly cited as around ₹3 lakh",
+        "figures": {
+          "collateralFreeLimitInr": 300000,
+          "approximate": true
+        },
+        "origin": "This app's own scheme notes; not yet checked against the official source."
+      },
+      "todo": [
+        "Add the official source URL (sourceUrl).",
+        "After checking this scheme against that source, record the date (lastVerified, YYYY-MM-DD).",
+        "Check the collateral-free limit (our notes say 'commonly cited around ₹3 lakh', which is not an official figure).",
+        "Check that PM-KISAN beneficiaries can apply through the PM-KISAN portal or a bank branch, as our notes say.",
+        "Check the documents list (Aadhaar, PAN or Form 60, land or cultivation records)."
+      ]
+    }
+  },
+  {
+    "id": "pmfby",
+    "name": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+    "category": "insurance",
+    "description": "Crop insurance scheme protecting farmers against crop loss/damage from natural calamities, pests, and diseases, with low, subsidised premium rates and the balance premium paid by the government.",
+    "eligibilityCriteria": [
+      "Farmers (owner or tenant) growing notified crops in notified areas",
+      "Compulsory for farmers who have availed a Kisan Credit Card or crop loan for notified crops; voluntary for others",
+      "Applicable to food crops, oilseeds, and annual commercial/horticultural crops as notified per season"
+    ],
+    "requiredDocuments": [
+      "Aadhaar card",
+      "Land ownership/tenancy documents",
+      "Bank account details",
+      "Sowing certificate (for loanee/non-loanee farmers as applicable)"
+    ],
+    "tags": [
+      "crop insurance",
+      "natural calamity",
+      "pest damage",
+      "premium subsidy"
+    ],
+    "applicability": [
+      "protection when crop is damaged by drought flood heavy rain hailstorm pest",
+      "rainfed and irrigated land alike",
+      "any notified crop wheat rice cotton sugarcane maize oilseeds pulses",
+      "purpose crop insurance premium and risk cover",
+      "all states and districts"
+    ],
+    "freshness": {
+      "sourceUrl": null,
+      "lastVerified": null,
+      "benefitAmount": {
+        "summary": "Crop insurance at subsidised premium rates, balance paid by the government (no rates in our notes)",
+        "figures": null,
+        "origin": "This app's own scheme notes; not yet checked against the official source."
+      },
+      "todo": [
+        "Add the official source URL (sourceUrl).",
+        "After checking this scheme against that source, record the date (lastVerified, YYYY-MM-DD).",
+        "Add the actual premium rates farmers pay by season and crop type (our notes give none).",
+        "Check whether enrolment is still compulsory for farmers with a Kisan Credit Card or crop loan, as our notes say.",
+        "Check which crop types are covered (food crops, oilseeds, annual commercial/horticultural) and who may enrol (owner or tenant)."
+      ]
+    }
+  },
+  {
+    "id": "aif",
+    "name": "Agriculture Infrastructure Fund (AIF)",
+    "category": "credit",
+    "description": "Medium-to-long-term debt financing facility for investment in post-harvest management infrastructure and community farming assets, such as warehouses, cold storage, and processing units, with interest subvention and credit guarantee support.",
+    "eligibilityCriteria": [
+      "Farmers, FPOs (Farmer Producer Organisations), agri-entrepreneurs, cooperatives, and startups engaged in agri-infrastructure projects",
+      "Project must relate to post-harvest management or community farming assets",
+      "Interest subvention of up to 3% on loans up to a specified cap, subject to conditions"
+    ],
+    "requiredDocuments": [
+      "Detailed project report / business plan",
+      "Land or lease documents for the infrastructure site",
+      "Entity registration documents (for FPOs/cooperatives/companies)",
+      "Bank account and KYC documents"
+    ],
+    "tags": [
+      "infrastructure",
+      "warehouse",
+      "cold storage",
+      "FPO",
+      "post-harvest",
+      "interest subvention"
+    ],
+    "applicability": [
+      "purpose warehouse cold storage godown grading sorting packhouse processing unit",
+      "post harvest infrastructure on farm or at village level",
+      "larger holdings farmer groups FPOs cooperatives and entrepreneurs",
+      "medium to high value capital investment loan"
+    ],
+    "freshness": {
+      "sourceUrl": null,
+      "lastVerified": null,
+      "benefitAmount": {
+        "summary": "Medium-to-long-term loans for post-harvest infrastructure, with interest subvention of up to 3% on loans up to a specified cap (the cap is not in our notes)",
+        "figures": {
+          "interestSubventionUpToPercent": 3,
+          "loanCapInr": null
+        },
+        "origin": "This app's own scheme notes; not yet checked against the official source."
+      },
+      "todo": [
+        "Add the official source URL (sourceUrl).",
+        "After checking this scheme against that source, record the date (lastVerified, YYYY-MM-DD).",
+        "Add the loan cap that the 3% interest subvention applies to (our notes say only 'a specified cap').",
+        "Check the 3% figure and the conditions attached to it.",
+        "Check who is eligible (farmers, FPOs, agri-entrepreneurs, cooperatives, startups) and which projects qualify."
+      ]
+    }
+  },
+  {
+    "id": "interest-subvention",
+    "name": "Modified Interest Subvention Scheme (MISS)",
+    "category": "credit",
+    "description": "Interest subsidy scheme that reduces the effective interest rate on short-term crop loans (up to a specified limit) for farmers who repay promptly, making working-capital credit cheaper.",
+    "eligibilityCriteria": [
+      "Farmers availing short-term crop loans through KCC or similar institutional credit up to the notified limit",
+      "Prompt/timely repayment required to receive the additional prompt repayment incentive",
+      "Available through public sector banks, cooperative banks, and regional rural banks"
+    ],
+    "requiredDocuments": [
+      "KCC or crop loan sanction documents",
+      "Bank account details",
+      "Land/cultivation records"
+    ],
+    "tags": [
+      "interest subsidy",
+      "crop loan",
+      "working capital",
+      "prompt repayment"
+    ],
+    "applicability": [
+      "purpose crop loan working capital at reduced interest",
+      "short term credit for cultivation inputs",
+      "any crop and any state",
+      "small and marginal holdings repaying on time"
+    ],
+    "freshness": {
+      "sourceUrl": null,
+      "lastVerified": null,
+      "benefitAmount": {
+        "summary": "Interest subsidy on short-term crop loans up to a specified limit, with an extra incentive for prompt repayment (no limit or rates in our notes)",
+        "figures": null,
+        "origin": "This app's own scheme notes; not yet checked against the official source."
+      },
+      "todo": [
+        "Add the official source URL (sourceUrl).",
+        "After checking this scheme against that source, record the date (lastVerified, YYYY-MM-DD).",
+        "Add the loan limit, the interest rate and the amount of the prompt-repayment incentive (our notes give none).",
+        "Check which lenders participate (public sector, cooperative and regional rural banks, as our notes say)."
+      ]
+    }
+  },
+  {
+    "id": "soil-health-card",
+    "name": "Soil Health Card Scheme",
+    "category": "advisory",
+    "description": "Provides farmers with soil nutrient status reports and crop-wise recommendations on fertilizer dosage and soil amendments to improve productivity and reduce input costs.",
+    "eligibilityCriteria": [
+      "All landholding farmers are eligible; land is tested at the village/panchayat level on a rotational cycle",
+      "No income or land-size restriction"
+    ],
+    "requiredDocuments": [
+      "Land record / plot details",
+      "Farmer identification (Aadhaar where applicable)"
+    ],
+    "tags": [
+      "soil testing",
+      "fertilizer advisory",
+      "input cost reduction"
+    ],
+    "applicability": [
+      "purpose soil testing and fertiliser dosage advice",
+      "nutrient status of black red alluvial clay loam sandy laterite soil",
+      "reducing input cost on any crop",
+      "free advisory for all landholding sizes"
+    ],
+    "freshness": {
+      "sourceUrl": null,
+      "lastVerified": null,
+      "benefitAmount": {
+        "summary": "Soil nutrient report and fertiliser recommendations for each landholding farmer, free advisory (no cost or cycle length in our notes)",
+        "figures": null,
+        "origin": "This app's own scheme notes; not yet checked against the official source."
+      },
+      "todo": [
+        "Add the official source URL (sourceUrl).",
+        "After checking this scheme against that source, record the date (lastVerified, YYYY-MM-DD).",
+        "Check that the card is free of charge, and how often a plot is re-tested (our notes say 'a rotational cycle').",
+        "Check the 'no income or land-size restriction' statement."
+      ]
+    }
+  },
+  {
+    "id": "pm-kisan-maandhan",
+    "name": "Pradhan Mantri Kisan Maandhan Yojana (PM-KMY)",
+    "category": "pension",
+    "description": "Voluntary, contributory pension scheme for small and marginal farmers, providing a monthly pension after the age of 60 in exchange for monthly contributions during working years, matched by the government.",
+    "eligibilityCriteria": [
+      "Small and marginal farmers aged 18-40 with up to 2 hectares of cultivable land",
+      "Not covered under other statutory social security schemes or income-tax payer status",
+      "Monthly contribution required until age 60, based on entry age"
+    ],
+    "requiredDocuments": [
+      "Aadhaar card",
+      "Land ownership records showing landholding size",
+      "Bank account/passbook",
+      "Age proof"
+    ],
+    "tags": [
+      "pension",
+      "retirement",
+      "small farmer",
+      "social security"
+    ],
+    "applicability": [
+      "purpose old age pension and retirement security",
+      "small and marginal holding up to 2 acres",
+      "farmers aged 18 to 40 enrolling for monthly pension after 60",
+      "low annual income households"
+    ],
+    "freshness": {
+      "sourceUrl": null,
+      "lastVerified": null,
+      "benefitAmount": {
+        "summary": "Voluntary contributory pension for small and marginal farmers, paid monthly after age 60; entry at age 18-40 with up to 2 hectares (no contribution or pension amounts in our notes)",
+        "figures": {
+          "entryAgeMin": 18,
+          "entryAgeMax": 40,
+          "maxHectares": 2
+        },
+        "origin": "This app's own scheme notes; not yet checked against the official source."
+      },
+      "todo": [
+        "Add the official source URL (sourceUrl).",
+        "After checking this scheme against that source, record the date (lastVerified, YYYY-MM-DD).",
+        "Add the monthly contribution by entry age and the monthly pension amount (our notes give neither).",
+        "Check the entry age range (18-40) and the 2-hectare limit.",
+        "Check the exclusions (other statutory social security schemes, income-tax payers)."
+      ]
+    }
+  }
+]

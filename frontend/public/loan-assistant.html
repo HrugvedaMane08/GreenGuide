@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loan Assistant - The Green Guide</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI", Arial, sans-serif; }
+    body { display:flex; min-height:100vh; background:#f4f7f5; color:#1c2b24; }
+
+    /* Sidebar — matches dashboard.html exactly */
+    .sidebar { width:250px; background:#0e3b2e; color:#fff; display:flex; flex-direction:column; padding:20px; flex-shrink:0; }
+    .logo { font-size:1.5rem; font-weight:700; margin-bottom:40px; color:#a5e1c9; }
+    .menu a { display:block; padding:12px; border-radius:12px; text-decoration:none; color:#fff; margin:6px 0; transition:0.25s; }
+    .menu a:hover, .menu a.active { background:#1c5e47; }
+    .sidebar .bottom { margin-top:auto; padding-top:16px; }
+
+    /* Main */
+    .main { flex:1; padding:28px 32px 60px; max-width:900px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+    .topbar h1 { font-size:1.6rem; color:#0e3b2e; }
+    .farmer-chip {
+      display:flex; align-items:center; gap:8px; background:#fff; border:1px solid #dcece3;
+      border-radius:999px; padding:6px 14px 6px 8px; font-size:0.85rem; color:#3f544a; cursor:pointer;
+    }
+    .farmer-chip .dot { width:8px; height:8px; border-radius:50%; background:#0e7a5a; }
+    .subtitle { color:#5a7268; margin-bottom:30px; font-size:0.95rem; max-width:560px; }
+
+    /* Stepper */
+    .step { display:flex; gap:18px; margin-bottom:6px; }
+    .step-rail { display:flex; flex-direction:column; align-items:center; }
+    .step-num {
+      width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:0.95rem; flex-shrink:0; transition:0.25s;
+      background:#e4ece7; color:#8aa198;
+    }
+    .step.active .step-num, .step.done .step-num { background:#0e7a5a; color:#fff; }
+    .step.done .step-num::after { content:"✓"; }
+    .step-line { flex:1; width:2px; background:#e4ece7; margin:4px 0; min-height:24px; }
+    .step:last-child .step-line { display:none; }
+
+    .step-body { flex:1; padding-bottom:28px; }
+    .step-title { font-size:1.05rem; font-weight:700; color:#0e3b2e; margin-bottom:2px; }
+    .step-sub { font-size:0.85rem; color:#8aa198; margin-bottom:14px; }
+    .step.locked .step-body { opacity:0.5; pointer-events:none; }
+
+    .card {
+      background:#fff; border:1px solid #eef3f0; border-radius:16px; padding:20px 22px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.04);
+    }
+
+    .row { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+    .field { flex:1; min-width:160px; }
+    label { display:block; font-size:0.8rem; color:#3f544a; margin-bottom:5px; font-weight:600; }
+    input, select {
+      width:100%; padding:10px 12px; border:1px solid #d5e0da; border-radius:10px;
+      font-size:0.92rem; outline:none; background:#fbfdfc;
+    }
+    input:focus, select:focus { border-color:#0e7a5a; box-shadow:0 0 0 2px rgba(14,122,90,0.15); }
+    .checkbox-row { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+    .checkbox-row input { width:auto; }
+
+    .btn {
+      padding:10px 22px; border:none; border-radius:24px; background:#0e7a5a; color:#fff;
+      font-weight:600; cursor:pointer; font-size:0.92rem; transition:0.2s;
+    }
+    .btn:hover { background:#0c6b4e; }
+    .btn.secondary { background:#e9f3ec; color:#0e3b2e; }
+    .btn.secondary:hover { background:#d9ebe1; }
+    .btn.link { background:none; color:#0e7a5a; padding:6px 4px; text-decoration:underline; font-size:0.82rem; }
+    .btn:disabled { opacity:0.55; cursor:not-allowed; }
+
+    .msg { margin-top:12px; padding:10px 14px; border-radius:10px; font-size:0.85rem; display:none; }
+    .msg.show { display:block; }
+    .msg.ok { background:#e9f7ef; border:1px solid #b7e4c7; color:#155724; }
+    .msg.err { background:#fdecea; border:1px solid #f5c2c0; color:#842029; }
+
+    /* Land picker chips */
+    .land-chip-list { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+    .land-chip {
+      border:1px solid #dcece3; border-radius:12px; padding:8px 14px; font-size:0.83rem; cursor:pointer;
+      background:#f8fdf9; color:#3f544a; transition:0.15s;
+    }
+    .land-chip .sub { color:#8aa198; font-size:0.75rem; }
+    .land-chip.selected { border-color:#0e7a5a; background:#e9f7ef; color:#0e3b2e; }
+
+    /* Mandi price card */
+    .mandi-box {
+      border:1px solid #dcece3; border-radius:12px; padding:14px 16px; margin-bottom:14px;
+      background:#f8fdf9;
+    }
+    .mandi-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px; }
+    .mandi-head h4 { font-size:0.88rem; color:#0e3b2e; }
+    .mandi-refresh { background:none; border:none; color:#0e7a5a; font-size:0.78rem; cursor:pointer; text-decoration:underline; padding:0; }
+    .mandi-avg { font-size:1.4rem; font-weight:700; color:#0e3b2e; }
+    .mandi-avg span { font-size:0.78rem; font-weight:500; color:#8aa198; }
+    .mandi-table { width:100%; border-collapse:collapse; margin-top:10px; font-size:0.82rem; }
+    .mandi-table th { text-align:left; color:#8aa198; font-weight:600; padding:4px 8px 6px; border-bottom:1px solid #e4ece7; }
+    .mandi-table td { padding:6px 8px; border-bottom:1px solid #eef3f0; color:#3f544a; }
+    .mandi-table tr:last-child td { border-bottom:none; }
+    .mandi-note { font-size:0.75rem; color:#8aa198; margin-top:8px; }
+
+    /* Eligibility gauge */
+    .gauge-wrap { margin-top:16px; }
+    .gauge-label { display:flex; justify-content:space-between; font-size:0.82rem; color:#3f544a; margin-bottom:6px; }
+    .gauge-track { height:10px; border-radius:6px; background:#eef3f0; overflow:hidden; }
+    .gauge-fill { height:100%; border-radius:6px; transition:width 0.4s ease; }
+    .gauge-fill.eligible { background:#0e7a5a; }
+    .gauge-fill.review { background:#e0a300; }
+    .gauge-fill.not_eligible { background:#c94b3f; }
+    .gauge-fill.needs_more_info { background:#e0a300; }
+    .gauge-note { font-size:0.82rem; color:#5a7268; margin-top:8px; line-height:1.5; }
+    .gauge-status { font-weight:700; text-transform:capitalize; }
+
+    /* Scheme cards */
+    .scheme-card {
+      background:#f8fdf9; border:1px solid #dcece3; border-left:4px solid #0e7a5a;
+      border-radius:12px; padding:16px 18px; margin-bottom:12px;
+    }
+    .scheme-head { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:6px; flex-wrap:wrap; }
+    .scheme-head h4 { color:#0e3b2e; font-size:1rem; }
+    .relevance { min-width:120px; }
+    .relevance-label { font-size:0.72rem; color:#8aa198; margin-bottom:3px; }
+    .relevance-track { height:6px; border-radius:4px; background:#e4ece7; overflow:hidden; }
+    .relevance-fill { height:100%; background:#0e7a5a; border-radius:4px; }
+    .explanation { font-size:0.87rem; color:#3f544a; margin:8px 0 10px; line-height:1.55; }
+    .checklist-label { font-size:0.76rem; font-weight:700; color:#0e7a5a; text-transform:uppercase; letter-spacing:0.02em; margin-bottom:5px; }
+    .scheme-card ul { padding-left:18px; font-size:0.84rem; color:#486a5b; }
+    .scheme-card ul li { margin-bottom:3px; }
+
+    /* Eligibility verdict (computed by rules in the backend, not by the model) */
+    .scheme-card.not_eligible { border-left-color:#c94b3f; }
+    .scheme-card.needs_more_info { border-left-color:#e0a300; }
+    .verdict { display:inline-block; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:0.02em; }
+    .verdict.eligible { background:#e1f3ea; color:#0e6b4c; }
+    .verdict.needs_more_info { background:#fff4d6; color:#8a6100; }
+    .verdict.not_eligible { background:#fbe3e0; color:#9a2f25; }
+    .verdict-reason { font-size:0.85rem; color:#3f544a; margin:7px 0 2px; line-height:1.5; }
+
+    /* "About you" facts the eligibility rules need */
+    .about-you { margin-bottom:16px; border:1px solid #dcece3; border-radius:12px; background:#fbfdfc; }
+    .about-you summary { cursor:pointer; padding:12px 16px; font-weight:700; color:#0e3b2e; font-size:0.9rem; }
+    .about-you-body { padding:0 16px 14px; }
+    .about-note { font-size:0.8rem; color:#5a7268; margin:0 0 12px; line-height:1.5; }
+
+    /* Eligibility check (no loan needed) */
+    .elig-counts { display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 14px; }
+    .elig-summary { font-size:0.85rem; color:#3f544a; margin-top:14px; }
+    .scheme-card.compact { padding:12px 16px; margin-bottom:10px; }
+    .scheme-card.compact .scheme-head { margin-bottom:2px; }
+    .scheme-card.compact .verdict-reason { margin:2px 0 0; }
+
+    /* Land chips: edit, and the edit-mode form */
+    .land-edit { background:none; border:none; color:#0e7a5a; font-size:0.74rem; text-decoration:underline; cursor:pointer; padding:2px 0 0; display:block; }
+
+    .land-remove { background:none; border:none; color:#b0463b; font-size:0.74rem; text-decoration:underline; cursor:pointer; padding:2px 0 0; display:inline-block; margin-left:10px; }
+
+    /* How firm a verdict is: land records, the farmer's own word, or lender-verified */
+    .basis-note { font-size:0.76rem; color:#8a6100; margin-top:4px; }
+    .basis-note.verified { color:#0e6b4c; }
+    .freshness-note { font-size:0.74rem; color:#8aa198; margin-top:6px; }
+    .freshness-note a { color:#0e7a5a; }
+
+    /* Your applications */
+    .app-row { border:1px solid #dcece3; border-radius:12px; padding:12px 16px; margin-bottom:10px; background:#fbfdfc; }
+    .app-head { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; font-size:0.92rem; color:#0e3b2e; }
+    .app-meta { font-size:0.8rem; color:#5a7268; margin-top:4px; }
+    .app-row[data-loan] { cursor:pointer; transition:border-color .15s, box-shadow .15s; }
+    .app-row[data-loan]:hover, .app-row[data-loan]:focus-visible { border-color:#0e6b4c; box-shadow:0 0 0 2px #e1f3ea; outline:none; }
+    .app-row.selected { border-color:#0e6b4c; background:#f1f9f5; }
+    .app-hint { font-size:0.75rem; color:#0e6b4c; margin-top:4px; }
+    .app-note { font-size:0.82rem; color:#3f544a; margin-top:6px; line-height:1.5; }
+
+    .empty { color:#8aa198; font-size:0.85rem; padding:6px 0; }
+    .loading-line { font-size:0.87rem; color:#5a7268; display:flex; align-items:center; gap:8px; padding:10px 0; }
+    .spinner { width:14px; height:14px; border:2px solid #dcece3; border-top-color:#0e7a5a; border-radius:50%; animation:spin 0.7s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">🌱 Green Guide</div>
+    <div class="menu">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/crop-selection">🌾 Crop Selection</a>
+      <a href="/weather">☀️ Weather Forecast</a>
+      <a href="/library">📚 Reference Library</a>
+      <a href="/calendar">📅 Crop Calendar</a>
+      <a href="/know-crops">🌱 Know About Crops</a>
+      <a href="/loan-assistant" class="active">💰 Loan Assistant</a>
+      <a href="/ask-question">🗣️ Ask a Question</a>
+    </div>
+    <div class="bottom">
+      <a href="login.html" id="logoutLink" style="color:#fff; text-decoration:none;">Log Out</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1>Loan &amp; Scheme Assistant</h1>
+      <div class="farmer-chip" id="farmerChip" title="The account you are logged in as">
+        <span class="dot"></span>
+        <span id="farmerChipLabel"></span>
+      </div>
+    </div>
+    <p class="subtitle">Register your land, apply for a loan, and get matched with government schemes you may qualify for — with the documents you'll need to apply.</p>
+
+    <!-- ELIGIBILITY CHECK: works from land records alone, no loan application needed -->
+    <div class="card" id="eligibilityCard" style="margin-bottom:26px;">
+      <div class="step-title">Which schemes can I get?</div>
+      <div class="step-sub">Check from your land records alone — no loan application needed.</div>
+      <details class="about-you" id="aboutYou">
+        <summary>About you — answer these so we can check your eligibility</summary>
+        <div class="about-you-body">
+          <p class="about-note">Optional. Saved for your farmer ID and used only to check scheme rules. Anything you leave as "Not sure" stays as "needs more info". What you enter here is taken on trust until the lender checks it against documents.</p>
+          <p class="about-note" id="aboutVerified" style="display:none;"></p>
+          <form id="aboutForm">
+            <div class="row">
+              <div class="field"><label for="ab_age">Your age</label><input id="ab_age" name="age" type="number" min="1" max="129" placeholder="35" /></div>
+              <div class="field"><label for="ab_landTenure">Your land is</label>
+                <select id="ab_landTenure" name="landTenure">
+                  <option value="">Not sure</option>
+                  <option value="owner">Owned by me</option>
+                  <option value="tenant">Leased / rented</option>
+                  <option value="sharecropper">Sharecropped</option>
+                  <option value="none">I do not farm any land</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="ab_incomeTaxPayer">Do you pay income tax?</label><select id="ab_incomeTaxPayer" name="incomeTaxPayer"><option value="">Not sure</option><option value="false">No</option><option value="true">Yes</option></select></div>
+              <div class="field"><label for="ab_governmentEmployee">Are you, or were you, a government employee above Class IV?</label><select id="ab_governmentEmployee" name="governmentEmployee"><option value="">Not sure</option><option value="false">No</option><option value="true">Yes</option></select></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="ab_registeredProfessional">Are you a registered doctor, engineer, lawyer or CA?</label><select id="ab_registeredProfessional" name="registeredProfessional"><option value="">Not sure</option><option value="false">No</option><option value="true">Yes</option></select></div>
+              <div class="field"><label for="ab_institutionalLandholder">Is the land held by an institution (trust, company, etc.)?</label><select id="ab_institutionalLandholder" name="institutionalLandholder"><option value="">Not sure</option><option value="false">No</option><option value="true">Yes</option></select></div>
+              <div class="field"><label for="ab_coveredBySocialSecurity">Are you covered by another government pension / social security scheme (e.g. EPFO, ESIC, NPS)?</label><select id="ab_coveredBySocialSecurity" name="coveredBySocialSecurity"><option value="">Not sure</option><option value="false">No</option><option value="true">Yes</option></select></div>
+            </div>
+            <button class="btn" type="submit">Save and re-check my eligibility</button>
+          </form>
+          <div id="aboutMsg" class="msg"></div>
+        </div>
+      </details>
+      <div class="row" style="align-items:flex-end;">
+        <div class="field"><label for="eligPurpose">What would you use a loan for? (optional)</label><input id="eligPurpose" placeholder="e.g. cold storage for onions" /></div>
+        <div class="field" style="flex:0 0 auto; min-width:0;"><button class="btn" type="button" id="checkEligibilityBtn">Check my eligibility</button></div>
+      </div>
+      <div id="eligibilityArea"></div>
+    </div>
+
+    <!-- STEP 1 — LAND -->
+    <div class="step active" id="stepLand">
+      <div class="step-rail">
+        <div class="step-num">1</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-title">Register your land</div>
+        <div class="step-sub">This tells us your soil, irrigation, and crop — the basis for everything below.</div>
+        <div class="card">
+          <div class="land-chip-list" id="landChipList"></div>
+
+          <!-- Mandi price card: appears once a land is selected -->
+          <div class="mandi-box" id="mandiBox" style="display:none;"></div>
+
+          <form id="landForm">
+            <div class="row">
+              <div class="field"><label>State</label><input name="state" required placeholder="Maharashtra" /></div>
+              <div class="field"><label>District</label><input name="district" required placeholder="Pune" /></div>
+              <div class="field"><label>Village (optional)</label><input name="village" placeholder="Wagholi" /></div>
+            </div>
+            <div class="row">
+              <div class="field"><label>Area (acres)</label><input name="areaAcres" type="number" step="0.1" required placeholder="2.5" /></div>
+              <div class="field"><label>Soil type</label><input name="soilType" placeholder="Black soil" /></div>
+              <div class="field"><label>Irrigation type</label><input name="irrigationType" placeholder="Borewell" /></div>
+              <div class="field"><label>Primary crop</label><input name="primaryCrop" placeholder="Sugarcane" /></div>
+            </div>
+            <button class="btn" type="submit" id="landSubmitBtn">Add this land</button>
+            <button class="btn link" type="button" id="landCancelEdit" style="display:none;">Cancel</button>
+          </form>
+          <div id="landMsg" class="msg"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 — LOAN -->
+    <div class="step locked" id="stepLoan">
+      <div class="step-rail">
+        <div class="step-num">2</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-title">Apply for a loan</div>
+        <div class="step-sub">We'll score your eligibility instantly using a trained model.</div>
+        <div class="card">
+          <form id="loanForm">
+            <div class="row">
+              <div class="field"><label>Requested amount (₹)</label><input name="requestedAmount" type="number" min="1" required placeholder="150000" /></div>
+              <div class="field"><label>Purpose</label><input name="purpose" required placeholder="Crop loan" /></div>
+            </div>
+            <div class="row">
+              <div class="field"><label>Annual income (₹)</label><input name="annualIncome" type="number" min="0" placeholder="300000" /></div>
+              <div class="field"><label>Existing loans (₹) — enter 0 if none</label><input name="existingLoans" type="number" min="0" placeholder="0" /></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="creditHistoryOk">Credit history</label>
+                <select id="creditHistoryOk" name="creditHistoryOk">
+                  <option value="">Not sure / skip</option>
+                  <option value="true">Clean — no defaults or long delays</option>
+                  <option value="false">Has had defaults or long delays</option>
+                </select>
+              </div>
+            </div>
+            <p class="about-note">Anything you skip is left blank, not guessed. We'll tell you what to add to get a score.</p>
+            <button class="btn" type="submit">Submit application</button>
+          </form>
+          <div id="loanMsg" class="msg"></div>
+          <div class="gauge-wrap" id="gaugeWrap" style="display:none;">
+            <div class="gauge-label">
+              <span>Eligibility score</span>
+              <span class="gauge-status" id="gaugeStatus"></span>
+            </div>
+            <div class="gauge-track"><div class="gauge-fill" id="gaugeFill"></div></div>
+            <div class="gauge-note" id="gaugeNote" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 — SCHEMES -->
+    <div class="step locked" id="stepSchemes">
+      <div class="step-rail">
+        <div class="step-num">3</div>
+      </div>
+      <div class="step-body">
+        <div class="step-title">Matching government schemes</div>
+        <div class="step-sub">Ranked by relevance to your land and loan profile, with the documents each one needs.</div>
+        <div class="card">
+          <div id="schemesArea"><div class="empty">Submit a loan application to see matched schemes.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:8px;">
+      <div class="step-title">Your applications</div>
+      <div class="step-sub">Click an application to see the government schemes related to it.</div>
+      <div id="applicationsArea"><div class="empty">No applications yet.</div></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:5000/api";
+
+    // ---- Farmer identity (reuses the session set at login; falls back to a manual chip) ----
+    // Who is asking: the logged-in account, and nothing else. This used to fall back to the user's
+    // NAME or to a shared "farmer1", and let anyone type any farmer id, so records piled up under
+    // accounts that do not exist. With nobody logged in the page goes to the login screen.
+    const farmerId = sessionStorage.getItem("userId");
+    if (!farmerId) {
+      window.location.replace("login.html");
+      throw new Error("Not logged in"); // stops the rest of this script from running
+    }
+    document.getElementById("farmerChipLabel").textContent = sessionStorage.getItem("userName") || "Logged in";
+
+    // The server answers 401 when the account is missing or unknown (e.g. deleted): start over at login.
+    const nativeFetch = window.fetch.bind(window);
+    window.fetch = async (...args) => {
+      const response = await nativeFetch(...args);
+      if (response.status === 401 && String(args[0]).startsWith(API_BASE)) {
+        sessionStorage.clear();
+        alert("Please log in again to continue.");
+        window.location.href = "login.html";
+      }
+      return response;
+    };
+
+    document.getElementById("logoutLink").addEventListener("click", () => sessionStorage.clear());
+
+    function showMsg(el, ok, message) {
+      el.className = "msg show " + (ok ? "ok" : "err");
+      el.textContent = message;
+    }
+
+    function setStepState(stepEl, state) {
+      stepEl.classList.remove("active", "locked", "done");
+      stepEl.classList.add(state);
+    }
+
+    // ---- STEP 1: Land ----
+    const landForm = document.getElementById("landForm");
+    const landMsg = document.getElementById("landMsg");
+    const landChipList = document.getElementById("landChipList");
+    const stepLand = document.getElementById("stepLand");
+    const stepLoan = document.getElementById("stepLoan");
+    const stepSchemes = document.getElementById("stepSchemes");
+
+    let selectedLandId = null;
+    let currentLoanId = null;
+    // Set while the current application could not be scored (missing answers). Submitting
+    // the form then UPDATES that application and re-scores it, instead of filing a second one.
+    let unscoredLoan = null; // { id, landId }
+    const landsById = {};
+    let editingLandId = null;
+
+    async function loadLands(autoSelectNewest = false) {
+      try {
+        const res = await fetch(`${API_BASE}/lands/farmer/${farmerId}`);
+        const data = await res.json();
+        if (!res.ok) return;
+
+        landChipList.innerHTML = "";
+        for (const k of Object.keys(landsById)) delete landsById[k];
+        if (data.length === 0) {
+          landChipList.innerHTML = '<div class="empty">No land registered yet — add one below.</div>';
+          return;
+        }
+
+        data.forEach((land, i) => {
+          const chip = document.createElement("div");
+          chip.className = "land-chip";
+          landsById[land._id] = land;
+          chip.innerHTML = `${esc(land.district)}, ${esc(land.state)} <div class="sub">${esc(land.areaAcres)} ac · ${esc(land.primaryCrop || "crop n/a")}</div><span><button type="button" class="land-edit">Edit</button><button type="button" class="land-remove">Remove</button></span>`;
+          chip.addEventListener("click", () => selectLand(land._id, chip));
+          chip.querySelector(".land-edit").addEventListener("click", (ev) => { ev.stopPropagation(); startEditingLand(land._id); });
+          chip.querySelector(".land-remove").addEventListener("click", (ev) => { ev.stopPropagation(); removeLand(land._id); });
+          landChipList.appendChild(chip);
+
+          if ((autoSelectNewest && i === 0) || (!selectedLandId && i === 0)) {
+            selectLand(land._id, chip);
+          }
+        });
+      } catch (err) {
+        showMsg(landMsg, false, "Could not reach backend — is it running?");
+      }
+    }
+
+    function selectLand(landId, chipEl) {
+      selectedLandId = landId;
+      document.querySelectorAll(".land-chip").forEach((c) => c.classList.remove("selected"));
+      chipEl.classList.add("selected");
+      setStepState(stepLand, "done");
+      setStepState(stepLoan, "active");
+      loadMandiPrice(landId);
+    }
+
+    const landSubmitBtn = document.getElementById("landSubmitBtn");
+    const landCancelEdit = document.getElementById("landCancelEdit");
+
+    function stopEditingLand() {
+      editingLandId = null;
+      landForm.reset();
+      landSubmitBtn.textContent = "Add this land";
+      landCancelEdit.style.display = "none";
+    }
+
+    function startEditingLand(landId) {
+      const land = landsById[landId];
+      if (!land) return;
+      editingLandId = landId;
+      for (const f of ["state", "district", "village", "areaAcres", "soilType", "irrigationType", "primaryCrop"]) {
+        landForm.elements[f].value = land[f] ?? "";
+      }
+      landSubmitBtn.textContent = "Save changes";
+      landCancelEdit.style.display = "inline-block";
+      showMsg(landMsg, true, "Editing this land. Changing its size, crop, soil or irrigation updates your loan scores and matched schemes.");
+      landForm.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    landCancelEdit.addEventListener("click", () => { stopEditingLand(); landMsg.className = "msg"; });
+
+    // Removing land shrinks the holding, so schemes and scores are refreshed like any other change.
+    // The server decides what removal means (see DELETE /api/lands/:id): kept in the background if
+    // loan applications refer to it, otherwise deleted.
+    async function removeLand(landId) {
+      const land = landsById[landId];
+      if (!land) return;
+      if (!confirm(`Remove ${land.district}, ${land.state} (${land.areaAcres} acres) from your land records?`)) return;
+      try {
+        const res = await fetch(`${API_BASE}/lands/${landId}?farmerId=${encodeURIComponent(farmerId)}`, { method: "DELETE" });
+        const data = await res.json();
+        if (!res.ok) return showMsg(landMsg, false, data.error || "Could not remove this land.");
+        if (selectedLandId === landId) selectedLandId = null;
+        if (editingLandId === landId) stopEditingLand();
+        showMsg(landMsg, true, `${data.message} Your scheme matches are being refreshed.`);
+        await loadLands();
+        refreshEligibilityIfShown();
+        armPolling();
+        loadApplications();
+      } catch (err) {
+        showMsg(landMsg, false, "Could not reach backend — is it running?");
+      }
+    }
+
+    landForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(landForm);
+      const editing = Boolean(editingLandId);
+      // When editing, a cleared optional box is sent as null so it clears the saved value.
+      const blank = editing ? null : undefined;
+      const body = {
+        farmerId,
+        state: fd.get("state"),
+        district: fd.get("district"),
+        village: fd.get("village") || blank,
+        areaAcres: parseFloat(fd.get("areaAcres")),
+        soilType: fd.get("soilType") || blank,
+        irrigationType: fd.get("irrigationType") || blank,
+        primaryCrop: fd.get("primaryCrop") || blank
+      };
+
+      try {
+        const res = await fetch(editing ? `${API_BASE}/lands/${editingLandId}` : `${API_BASE}/lands`, {
+          method: editing ? "PATCH" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) return showMsg(landMsg, false, data.error || (editing ? "Failed to update land." : "Failed to register land."));
+
+        const refreshed = data.refreshed || {};
+        showMsg(landMsg, true, editing
+          ? "Land updated." + (refreshed.loansRescored || refreshed.schemesRefreshing ? " Your loan scores were recalculated and your scheme matches are being refreshed." : "")
+          : "Land added.");
+        stopEditingLand();
+        showMsgKeep(landMsg);
+        await loadLands(!editing);
+        refreshEligibilityIfShown();
+        armPolling();
+        loadApplications();
+      } catch (err) {
+        showMsg(landMsg, false, "Could not reach backend — is it running?");
+      }
+    });
+
+    // stopEditingLand() resets the form but must not hide the success message just shown.
+    function showMsgKeep(el) { el.classList.add("show"); }
+
+    // ---- Mandi price card ----
+    const mandiBox = document.getElementById("mandiBox");
+
+    async function loadMandiPrice(landId) {
+      mandiBox.style.display = "block";
+      mandiBox.innerHTML = '<div class="loading-line"><div class="spinner"></div> Checking today\'s mandi prices…</div>';
+
+      try {
+        const res = await fetch(`${API_BASE}/lands/${landId}/mandi-price?farmerId=${encodeURIComponent(farmerId)}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          mandiBox.innerHTML = `
+            <div class="mandi-head"><h4>Today's Mandi Price</h4></div>
+            <div class="empty">${data.error || "Couldn't fetch mandi prices right now."}</div>
+          `;
+          return;
+        }
+
+        renderMandiPrice(data, landId);
+      } catch (err) {
+        mandiBox.innerHTML = `
+          <div class="mandi-head"><h4>Today's Mandi Price</h4></div>
+          <div class="empty">Could not reach backend — is it running?</div>
+        `;
+      }
+    }
+
+    function renderMandiPrice(data, landId) {
+      const records = data.records || data.markets || [];
+      const crop = data.crop || data.primaryCrop || "your crop";
+
+      if (records.length === 0) {
+        mandiBox.innerHTML = `
+          <div class="mandi-head">
+            <h4>Today's Mandi Price · ${crop}</h4>
+            <button class="mandi-refresh" onclick="loadMandiPrice('${landId}')">Refresh</button>
+          </div>
+          <div class="empty">No mandi price data reported yet for ${crop} in your area today.</div>
+        `;
+        return;
+      }
+
+      const avg = data.averageModalPrice || data.average
+        || Math.round(records.reduce((sum, r) => sum + (r.modalPrice || r.modal_price || 0), 0) / records.length);
+
+      const rows = records.slice(0, 8).map((r) => `
+        <tr>
+          <td>${r.market || r.mandi || "—"}</td>
+          <td>₹${r.minPrice ?? r.min_price ?? "—"}</td>
+          <td>₹${r.maxPrice ?? r.max_price ?? "—"}</td>
+          <td>₹${r.modalPrice ?? r.modal_price ?? "—"}</td>
+        </tr>
+      `).join("");
+
+      mandiBox.innerHTML = `
+        <div class="mandi-head">
+          <h4>Today's Mandi Price · ${crop}</h4>
+          <button class="mandi-refresh" onclick="loadMandiPrice('${landId}')">Refresh</button>
+        </div>
+        <div class="mandi-avg">₹${avg} <span>/ quintal · avg modal price</span></div>
+        <table class="mandi-table">
+          <thead><tr><th>Market</th><th>Min</th><th>Max</th><th>Modal</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="mandi-note">Source: Agmarknet / data.gov.in, prices per quintal.</div>
+      `;
+    }
+
+    // ---- STEP 2: Loan ----
+    const loanForm = document.getElementById("loanForm");
+    const loanMsg = document.getElementById("loanMsg");
+    const gaugeWrap = document.getElementById("gaugeWrap");
+    const gaugeFill = document.getElementById("gaugeFill");
+    const gaugeStatus = document.getElementById("gaugeStatus");
+    const gaugeNote = document.getElementById("gaugeNote");
+
+    loanForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!selectedLandId) return showMsg(loanMsg, false, "Add and select a land record first.");
+
+      const fd = new FormData(loanForm);
+      const body = {
+        farmerId,
+        landId: selectedLandId,
+        requestedAmount: parseFloat(fd.get("requestedAmount")),
+        purpose: fd.get("purpose"),
+        annualIncome: fd.get("annualIncome") ? parseFloat(fd.get("annualIncome")) : undefined,
+        // Left blank means "not provided" - never a default of 0 or "clean".
+        existingLoans: fd.get("existingLoans") ? parseFloat(fd.get("existingLoans")) : undefined,
+        creditHistoryOk: fd.get("creditHistoryOk") ? fd.get("creditHistoryOk") === "true" : undefined
+      };
+
+      const updating = Boolean(unscoredLoan && unscoredLoan.landId === selectedLandId);
+      // For an update, a blank answer is sent as null so it clears the saved value.
+      const request = updating
+        ? {
+            url: `${API_BASE}/loans/${unscoredLoan.id}`,
+            method: "PATCH",
+            body: {
+              farmerId,
+              requestedAmount: body.requestedAmount,
+              purpose: body.purpose,
+              annualIncome: body.annualIncome ?? null,
+              existingLoans: body.existingLoans ?? null,
+              creditHistoryOk: body.creditHistoryOk ?? null
+            }
+          }
+        : { url: `${API_BASE}/loans`, method: "POST", body };
+
+      try {
+        const res = await fetch(request.url, {
+          method: request.method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(request.body)
+        });
+        const data = await res.json();
+        if (!res.ok) return showMsg(loanMsg, false, data.error || "Failed to submit application.");
+
+        currentLoanId = data._id;
+        unscoredLoan = data.eligibilityStatus === "needs_more_info" ? { id: data._id, landId: selectedLandId } : null;
+        loanForm.querySelector('button[type="submit"]').textContent = unscoredLoan ? "Update application" : "Submit application";
+        showMsg(loanMsg, true, updating ? "Application updated." : "Application submitted.");
+
+        gaugeWrap.style.display = "block";
+        if (data.eligibilityStatus === "needs_more_info") {
+          // No score was computed: say what to add instead of showing 0%.
+          gaugeFill.style.width = "0%";
+          gaugeFill.className = "gauge-fill needs_more_info";
+          gaugeStatus.textContent = "Needs more info";
+          gaugeNote.textContent = `To get a score, add: ${(data.missingFields || []).join("; ")}. Fill them in above and press "Update application".`;
+          gaugeNote.style.display = "block";
+        } else {
+          const pct = Math.round((data.eligibilityScore || 0) * 100);
+          gaugeFill.style.width = pct + "%";
+          gaugeFill.className = "gauge-fill " + (data.eligibilityStatus || "review");
+          gaugeStatus.textContent = `${(data.eligibilityStatus || "").replace("_", " ")} · ${pct}%`;
+          gaugeNote.style.display = "none";
+        }
+
+        setStepState(stepLoan, "done");
+        setStepState(stepSchemes, "active");
+        findMatchingSchemes(currentLoanId);
+        loadApplications();
+      } catch (err) {
+        showMsg(loanMsg, false, "Could not reach backend — is it running?");
+      }
+    });
+
+    // ---- STEP 3: Schemes ----
+    const schemesArea = document.getElementById("schemesArea");
+
+    // Reasons can contain text the farmer typed (e.g. their loan purpose), so escape
+    // everything we put into innerHTML from the eligibility result.
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const VERDICT_TEXT = { eligible: "Eligible", needs_more_info: "Needs more info", not_eligible: "Not eligible" };
+
+    // How firm a verdict is. Details from "About you" are the farmer's own word until the
+    // lender has checked them against documents, and the screen should not pretend otherwise.
+    function basisHtml(eligibility) {
+      if (!eligibility) return "";
+      if (eligibility.basis === "self_declared") return '<div class="basis-note">Based on details you entered — not yet verified by the lender.</div>';
+      if (eligibility.basis === "verified") return '<div class="basis-note verified">The details this rests on have been verified by the lender.</div>';
+      return "";
+    }
+
+    // When a scheme's details were last checked against an official source. Nothing has been checked
+    // yet, and the farmer should be told that rather than left to assume what they read is current.
+    function freshnessHtml(info) {
+      const checked = info && /^\d{4}-\d{2}-\d{2}$/.test(info.lastVerified || "");
+      const when = checked ? new Date(`${info.lastVerified}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }) : null;
+      const link = info && /^https:\/\//.test(info.sourceUrl || "") ? ` · <a href="${esc(info.sourceUrl)}" target="_blank" rel="noopener noreferrer">Official source</a>` : "";
+      return `<div class="freshness-note">${when ? `Details last checked ${esc(when)}` : "Not yet checked against the official source"}${link}</div>`;
+    }
+
+    function verdictHtml(eligibility) {
+      const v = eligibility && VERDICT_TEXT[eligibility.verdict] ? eligibility.verdict : null;
+      if (!v) return ""; // older saved matches have no verdict
+      // For "not eligible" the explanation below already states the reason; repeating it adds nothing.
+      if (v === "not_eligible") return `<div><span class="verdict not_eligible">${VERDICT_TEXT[v]}</span></div>${basisHtml(eligibility)}`;
+      return `<div><span class="verdict ${v}">${VERDICT_TEXT[v]}</span></div><div class="verdict-reason">${esc(eligibility.reason)}</div>${basisHtml(eligibility)}`;
+    }
+
+    function renderSchemes(schemes) {
+      if (!schemes || schemes.length === 0) {
+        schemesArea.innerHTML = '<div class="empty">No matching schemes found for this profile.</div>';
+        return;
+      }
+      schemesArea.innerHTML = schemes.map((s) => {
+        const pct = Math.round((s.matchScore || 0) * 100);
+        const v = s.eligibility && VERDICT_TEXT[s.eligibility.verdict] ? s.eligibility.verdict : "";
+        return `
+          <div class="scheme-card ${v}">
+            <div class="scheme-head">
+              <h4>${s.name}</h4>
+              <div class="relevance">
+                <div class="relevance-label">Relevance ${pct}%</div>
+                <div class="relevance-track"><div class="relevance-fill" style="width:${pct}%"></div></div>
+              </div>
+            </div>
+            ${verdictHtml(s.eligibility)}
+            <div class="explanation">${s.explanation}</div>
+            ${v === "not_eligible" ? "" : `<div class="checklist-label">Documents needed</div>
+            <ul>${(s.documentChecklist || []).map((d) => `<li>${d}</li>`).join("")}</ul>`}
+            ${freshnessHtml(s.freshness)}
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function findMatchingSchemes(loanId) {
+      schemesArea.innerHTML = '<div class="loading-line"><div class="spinner"></div> Finding schemes that fit your profile…</div>';
+      try {
+        const res = await fetch(`${API_BASE}/loans/${loanId}/schemes`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ farmerId })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          schemesArea.innerHTML = `<div class="empty">${data.error || "Couldn't match schemes right now."}</div>`;
+          return;
+        }
+        setStepState(stepSchemes, "done");
+        renderSchemes(data.matchedSchemes);
+      } catch (err) {
+        schemesArea.innerHTML = '<div class="empty">Could not reach backend — is it running?</div>';
+      }
+    }
+
+    // ---- About you: facts the eligibility rules need, saved per farmer ----
+    const aboutForm = document.getElementById("aboutForm");
+    const aboutMsg = document.getElementById("aboutMsg");
+    const ABOUT_LABELS = { age: "your age", landTenure: "how you hold your land", incomeTaxPayer: "income tax", governmentEmployee: "government employment", registeredProfessional: "professional registration", institutionalLandholder: "institutional land", coveredBySocialSecurity: "other pension cover" };
+    const ABOUT_FIELDS = ["age", "landTenure", "incomeTaxPayer", "governmentEmployee", "registeredProfessional", "institutionalLandholder", "coveredBySocialSecurity"];
+
+    async function loadAbout() {
+      aboutForm.reset();
+      try {
+        const res = await fetch(`${API_BASE}/farmer-profiles/${encodeURIComponent(farmerId)}`);
+        if (!res.ok) return;
+        const saved = await res.json();
+        ABOUT_FIELDS.forEach((f) => {
+          if (saved[f] !== undefined && saved[f] !== null) aboutForm.elements[f].value = String(saved[f]);
+        });
+        const verifiedBox = document.getElementById("aboutVerified");
+        const verified = (saved.verifiedFields || []).map((f) => ABOUT_LABELS[f] || f);
+        verifiedBox.style.display = verified.length ? "block" : "none";
+        verifiedBox.textContent = verified.length ? `Verified by the lender: ${verified.join("; ")}. Changing one of these removes its verification.` : "";
+      } catch (err) { /* optional; the form just stays empty */ }
+    }
+
+    aboutForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      // "" clears a field on the server; booleans arrive as "true"/"false" strings.
+      const body = {};
+      ABOUT_FIELDS.forEach((f) => {
+        const raw = aboutForm.elements[f].value;
+        if (raw === "") body[f] = null;
+        else if (f === "age") body[f] = Number(raw);
+        else if (raw === "true" || raw === "false") body[f] = raw === "true";
+        else body[f] = raw;
+      });
+
+      try {
+        const res = await fetch(`${API_BASE}/farmer-profiles/${encodeURIComponent(farmerId)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) return showMsg(aboutMsg, false, data.error || "Could not save your details.");
+        showMsg(aboutMsg, true, "Saved.");
+        if (currentLoanId) findMatchingSchemes(currentLoanId);
+        refreshEligibilityIfShown();
+      } catch (err) {
+        showMsg(aboutMsg, false, "Could not reach backend — is it running?");
+      }
+    });
+
+    // ---- Eligibility check: from the land records alone, no loan needed ----
+    const eligibilityArea = document.getElementById("eligibilityArea");
+    let eligibilityShown = false;
+
+    function renderEligibility(data) {
+      if (data.note) {
+        eligibilityArea.innerHTML = `<div class="empty">${esc(data.note)}</div>`;
+        return;
+      }
+      const h = data.holding;
+      const need = data.needsMoreInfoAbout.length
+        ? `<div class="about-note">To firm these up, tell us: ${data.needsMoreInfoAbout.map(esc).join("; ")}.</div>`
+        : "";
+      eligibilityArea.innerHTML = `
+        <div class="elig-summary">Based on ${esc(h.plots)} land record${h.plots === 1 ? "" : "s"} totalling ${esc(h.totalAcres)} acres (${esc(h.totalHectares)} ha).</div>
+        <div class="elig-counts">
+          <span class="verdict eligible">${esc(data.counts.eligible)} eligible</span>
+          <span class="verdict needs_more_info">${esc(data.counts.needs_more_info)} need more info</span>
+          <span class="verdict not_eligible">${esc(data.counts.not_eligible)} not eligible</span>
+        </div>
+        ${need}
+        ${data.schemes.map((s) => {
+          const v = VERDICT_TEXT[s.verdict] ? s.verdict : "needs_more_info";
+          return `<div class="scheme-card compact ${v}">
+            <div class="scheme-head"><h4>${esc(s.name)}</h4><span class="verdict ${v}">${VERDICT_TEXT[v]}</span></div>
+            <div class="verdict-reason">${esc(s.reason)}</div>
+            ${basisHtml(s)}
+            ${freshnessHtml(s)}
+          </div>`;
+        }).join("")}`;
+    }
+
+    async function checkEligibility() {
+      eligibilityShown = true;
+      eligibilityArea.innerHTML = '<div class="loading-line"><div class="spinner"></div> Checking every scheme against your land and details…</div>';
+      const purpose = document.getElementById("eligPurpose").value.trim();
+      try {
+        const res = await fetch(`${API_BASE}/schemes/eligibility?farmerId=${encodeURIComponent(farmerId)}${purpose ? `&purpose=${encodeURIComponent(purpose)}` : ""}`);
+        const data = await res.json();
+        if (!res.ok) { eligibilityArea.innerHTML = `<div class="empty">${esc(data.error || "Couldn't check eligibility right now.")}</div>`; return; }
+        renderEligibility(data);
+      } catch (err) {
+        eligibilityArea.innerHTML = '<div class="empty">Could not reach backend — is it running?</div>';
+      }
+    }
+    document.getElementById("checkEligibilityBtn").addEventListener("click", checkEligibility);
+    function refreshEligibilityIfShown() { if (eligibilityShown) checkEligibility(); }
+
+    // ---- Your applications: status, decision, and refresh progress ----
+    const applicationsArea = document.getElementById("applicationsArea");
+    let applicationsPoll = null;
+    let pollsLeft = 0;
+    const RATING_TEXT = { eligible: "Eligible", review: "Needs review", not_eligible: "Not eligible", needs_more_info: "Needs more info" };
+
+    let applicationsById = {};
+    function renderApplications(apps) {
+      applicationsById = Object.fromEntries(apps.map((a) => [a._id, a]));
+      if (!apps.length) { applicationsArea.innerHTML = '<div class="empty">No applications yet.</div>'; return; }
+      applicationsArea.innerHTML = apps.map((a) => {
+        const rating = RATING_TEXT[a.eligibilityStatus] || "";
+        const score = typeof a.eligibilityScore === "number" ? ` · ${Math.round(a.eligibilityScore * 100)}%` : "";
+        const missing = a.eligibilityStatus === "needs_more_info" && a.missingFields?.length ? ` — add: ${a.missingFields.map(esc).join("; ")}` : "";
+        const stale = a.matchedSchemesStale ? '<div class="app-note">Updating your scheme matches after your land changed…</div>' : "";
+        return `<div class="app-row${a._id === currentLoanId ? " selected" : ""}" data-loan="${esc(a._id)}" tabindex="0" role="button">
+          <div class="app-head"><span><strong>₹${esc(Number(a.requestedAmount).toLocaleString("en-IN"))}</strong> · ${esc(a.purpose)}</span></div>
+          <div class="app-meta">Eligibility: ${esc(rating)}${score}${missing}</div>
+          ${stale}
+          <div class="app-hint">Click to see related schemes</div>
+        </div>`;
+      }).join("");
+    }
+
+    // Clicking an application shows the schemes matched for it in step 3.
+    function openApplication(loanId) {
+      const a = applicationsById[loanId];
+      if (!a) return;
+      currentLoanId = loanId;
+      setStepState(stepSchemes, "done");
+      applicationsArea.querySelectorAll(".app-row").forEach((r) => r.classList.toggle("selected", r.dataset.loan === loanId));
+      if (a.matchedSchemes?.length && !a.matchedSchemesStale) renderSchemes(a.matchedSchemes);
+      else findMatchingSchemes(loanId);
+      stepSchemes.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    applicationsArea.addEventListener("click", (e) => {
+      const row = e.target.closest(".app-row[data-loan]");
+      if (row) openApplication(row.dataset.loan);
+    });
+    applicationsArea.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      const row = e.target.closest(".app-row[data-loan]");
+      if (row) { e.preventDefault(); openApplication(row.dataset.loan); }
+    });
+
+    async function loadApplications() {
+      clearTimeout(applicationsPoll);
+      try {
+        const res = await fetch(`${API_BASE}/loans/farmer/${encodeURIComponent(farmerId)}`);
+        if (!res.ok) return;
+        const apps = await res.json();
+        renderApplications(apps);
+
+        // After a land change the matches are recomputed in the background: keep checking
+        // until they are fresh, then show the new matches for the application on screen.
+        const refreshing = apps.some((a) => a.matchedSchemesStale);
+        if (refreshing && pollsLeft > 0) {
+          pollsLeft -= 1;
+          applicationsPoll = setTimeout(loadApplications, 5000);
+        } else if (!refreshing && currentLoanId) {
+          const current = apps.find((a) => a._id === currentLoanId);
+          if (current && current.matchedSchemes?.length && pollsLeft < 30 && wasRefreshing) {
+            renderSchemes(current.matchedSchemes);
+          }
+        }
+        wasRefreshing = refreshing;
+      } catch (err) { /* the list is a convenience; leave what is on screen */ }
+    }
+    let wasRefreshing = false;
+    // Land edits and submissions start a short polling window.
+    const armPolling = () => { pollsLeft = 30; };
+
+    // ---- Init ----
+    loadAbout();
+    loadLands();
+    armPolling();
+    loadApplications();
+  </script>
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Know About Crops - The Green Guide</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+    
+    body {
+      min-height: 100vh;
+      background: #f4f7f5;
+      color: #1c2b24;
+    }
+
+    /* HEADER */
+    .header {
+      background: #0e3b2e;
+      color: #fff;
+      padding: 15px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #a5e1c9;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* GTranslate Styling for Pill Button */
+    .gtranslate_wrapper {
+      order: 2;
+    }
+
+    .gtranslate_wrapper select {
+      padding: 10px 20px 10px 15px;
+      border-radius: 999px; 
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      background-color: #0e7a5a; 
+      color: white;
+      cursor: pointer;
+      height: 40px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+    
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      margin-left: 20px;
+      order: 3;
+    }
+    
+    .user img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: #0e7a5a;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 999px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    
+    .back-btn:hover {
+      background: #0b5f46;
+    }
+
+    /* MAIN CONTENT */
+    .main {
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* SEARCH AND FILTERS */
+    .search-container {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .search-box {
+      flex: 1;
+      position: relative;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 12px 20px 12px 45px;
+      border: 1px solid #cfe3d9;
+      border-radius: 999px;
+      font-size: 1rem;
+      outline: none;
+    }
+    
+    .search-box i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #5b786b;
+    }
+    
+    .filter-btn {
+      padding: 12px 20px;
+      background: #fff;
+      border: 1px solid #cfe3d9;
+      border-radius: 999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .filter-btn:hover {
+      background: #f1fbf6;
+    }
+
+    /* CROP CATEGORIES */
+    .categories {
+      display: flex;
+      gap: 14px;
+      overflow: auto;
+      padding-bottom: 2px;
+      margin-bottom: 20px;
+    }
+    
+    .cat {
+      min-width: 150px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 6px 18px rgba(20, 48, 38, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    
+    .cat:hover {
+      transform: translateY(-2px);
+    }
+    
+    .cat img {
+      width: 28px;
+      height: 28px;
+    }
+    
+    .cat.active {
+      background: #0e7a5a;
+      color: #fff;
+    }
+
+    /* CROP GRID */
+    .crops-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .crop-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(20, 48, 38, 0.06);
+      transition: 0.2s;
+    }
+    
+    .crop-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(20, 48, 38, 0.1);
+    }
+    
+    .crop-image {
+      height: 200px;
+      overflow: hidden;
+    }
+    
+    .crop-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .crop-info {
+      padding: 16px;
+    }
+    
+    .crop-name {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: #0e3b2e;
+    }
+    
+    .crop-type {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #e7f7ef;
+      color: #0e7a5a;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+    }
+    
+    .crop-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .detail-label {
+      font-size: 0.8rem;
+      color: #5b786b;
+    }
+    
+    .detail-value {
+      font-weight: 600;
+    }
+    
+    .view-details-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: #0e7a5a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    
+    .view-details-btn:hover {
+      background: #0b5f46;
+    }
+
+    /* CROP MODAL */
+    .crop-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .modal-content {
+      background: #fff;
+      border-radius: 16px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow: auto;
+      position: relative;
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #5b786b;
+      z-index: 10;
+    }
+    
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #e8f2ed;
+      position: relative;
+    }
+    
+    .modal-header-image {
+      height: 250px;
+      overflow: hidden;
+      border-radius: 12px;
+      margin-bottom: 15px;
+    }
+    
+    .modal-header-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .modal-body {
+      padding: 20px;
+    }
+    
+    .modal-section {
+      margin-bottom: 20px;
+    }
+    
+    .modal-section h3 {
+      color: #0e3b2e;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .requirements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    
+    .requirement-item {
+      background: #f1fbf6;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    
+    .requirement-label {
+      font-size: 0.9rem;
+      color: #5b786b;
+      margin-bottom: 5px;
+    }
+    
+    .requirement-value {
+      font-weight: 600;
+    }
+    
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .crops-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .search-container {
+        flex-direction: column;
+      }
+      
+      .categories {
+        overflow-x: auto;
+      }
+      
+      .cat {
+        min-width: 120px;
+      }
+      
+      .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+    
+      .header {
+        flex-wrap: wrap;
+        flex-direction: row;
+      }
+      
+      .header h1 {
+        flex-basis: 100%;
+        margin-bottom: 10px;
+        justify-content: center;
+        order: 1;
+      }
+      
+      .gtranslate_wrapper {
+        order: 2;
+        margin-right: 10px;
+      }
+      
+      .user {
+        order: 3;
+        margin-left: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><i class="fas fa-leaf"></i> Know About Crops - Green Guide</h1>
+
+    <div class="gtranslate_wrapper"></div>
+
+    <div class="user">
+      <span id="userNameDisplay">User</span>
+      <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="user" width="40" height="40">
+    </div>
+  </div>
+
+  <div style="padding: 15px 24px 0;">
+    <a href="dashboard.html" class="back-btn">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+
+  <div class="main">
+    <div class="search-container">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search for crops..." id="searchInput">
+      </div>
+      <button class="filter-btn">
+        <i class="fas fa-filter"></i>
+        Filters
+      </button>
+    </div>
+
+    <div class="categories">
+      <div class="cat active" data-category="all">
+        <img src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png" alt="All Crops">
+        <span>All Crops</span>
+      </div>
+      <div class="cat" data-category="vegetables">
+        <img src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png" alt="Vegetables">
+        <span>Vegetables</span>
+      </div>
+      <div class="cat" data-category="grains">
+        <img src="https://cdn-icons-png.flaticon.com/512/1047/1047695.png" alt="Grains">
+        <span>Grains</span>
+      </div>
+      <div class="cat" data-category="fruits">
+        <img src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png" alt="Fruits">
+        <span>Fruits</span>
+      </div>
+      <div class="cat" data-category="pulses">
+        <img src="https://cdn-icons-png.flaticon.com/512/1532/1532710.png" alt="Pulses">
+        <span>Pulses</span>
+      </div>
+    </div>
+
+    <div class="crops-grid" id="cropsGrid">
+      <!-- Crops will be loaded here -->
+    </div>
+  </div>
+
+  <div class="crop-modal" id="cropModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <div class="modal-header">
+        <div class="modal-header-image">
+          <img id="modalImage" src="" alt="Crop Image">
+        </div>
+        <h2 id="modalTitle">Crop Name</h2>
+        <span class="crop-type" id="modalType">Vegetable</span>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <h3><i class="fas fa-info-circle"></i> Overview</h3>
+          <p id="modalOverview">Crop overview will be displayed here.</p>
+        </div>
+        
+        <div class="modal-section">
+          <h3><i class="fas fa-seedling"></i> Growing Conditions</h3>
+          <div class="requirements-grid">
+            <div class="requirement-item">
+              <div class="requirement-label">Season</div>
+              <div class="requirement-value" id="modalSeason">Kharif/Rabi</div>
+            </div>
+            <div class="requirement-item">
+              <div class="requirement-label">Soil Type</div>
+              <div class="requirement-value" id="modalSoil">Loamy</div>
+            </div>
+            <div class="requirement-item">
+              <div class="requirement-label">Temperature</div>
+              <div class="requirement-value" id="modalTemp">20-30°C</div>
+            </div>
+            <div class="requirement-item">
+              <div class="requirement-label">Water Needs</div>
+              <div class="requirement-value" id="modalWater">Moderate</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-section">
+          <h3><i class="fas fa-calendar-alt"></i> Growth Timeline</h3>
+          <div class="requirements-grid">
+            <div class="requirement-item">
+              <div class="requirement-label">Germination</div>
+              <div class="requirement-value" id="modalGermination">5-10 days</div>
+            </div>
+            <div class="requirement-item">
+              <div class="requirement-label">Maturity</div>
+              <div class="requirement-value" id="modalMaturity">60-90 days</div>
+            </div>
+            <div class="requirement-item">
+              <div class="requirement-label">Harvest Time</div>
+              <div class="requirement-value" id="modalHarvest">When fruits are firm</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-section">
+          <h3><i class="fas fa-clipboard-list"></i> Care Instructions</h3>
+          <p id="modalCare">Care instructions will be displayed here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let cropsData = []; // will come from MongoDB
+
+    // Sample data for testing if API is not available
+    const sampleCropsData = [
+      {
+        id: 1,
+        name: "Tomato",
+        type: "Vegetables",
+        image: "https://images.unsplash.com/photo-1546470427-e212b7d31075?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dG9tYXRvfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        season: "Kharif/Rabi",
+        maturity: "60-90 days",
+        overview: "Tomatoes are one of the most popular vegetables grown in home gardens. They are rich in vitamins A and C and lycopene.",
+        soil: "Well-drained loamy soil",
+        temperature: "20-30°C",
+        water: "Moderate",
+        germination: "5-10 days",
+        harvest: "When fruits are firm and fully colored",
+        care: "Provide support with stakes or cages. Water regularly but avoid wetting leaves to prevent diseases."
+      },
+      {
+        id: 2,
+        name: "Wheat",
+        type: "Grains",
+        image: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8d2hlYXR8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
+        season: "Rabi",
+        maturity: "110-130 days",
+        overview: "Wheat is a cereal grain grown worldwide and is a staple food for a large part of the world's population.",
+        soil: "Clay loam to sandy loam",
+        temperature: "10-25°C",
+        water: "Moderate to high",
+        germination: "7-10 days",
+        harvest: "When grains are hard and plants turn golden brown",
+        care: "Requires well-prepared seedbed. Apply nitrogen fertilizer at tillering and flowering stages."
+      },
+      {
+        id: 3,
+        name: "Mango",
+        type: "Fruits",
+        image: "https://images.unsplash.com/photo-1553279768-865429fa0078?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWFuZ298ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
+        season: "Summer",
+        maturity: "4-6 years",
+        overview: "Mango is a tropical fruit known for its sweet taste and juicy texture. It's rich in vitamins A and C.",
+        soil: "Well-drained sandy loam to loam",
+        temperature: "24-30°C",
+        water: "Moderate",
+        germination: "2-3 weeks",
+        harvest: "When fruits develop characteristic color and aroma",
+        care: "Prune to maintain shape and remove dead wood. Protect from frost in winter."
+      },
+      {
+        id: 4,
+        name: "Lentils",
+        type: "Pulses",
+        image: "https://images.unsplash.com/photo-1596040033221-a1b4d1e4d679?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bGVudGlsc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        season: "Rabi",
+        maturity: "80-110 days",
+        overview: "Lentils are edible legumes rich in protein and dietary fiber. They are an important source of protein for vegetarians.",
+        soil: "Well-drained loamy soil",
+        temperature: "18-30°C",
+        water: "Low to moderate",
+        germination: "6-10 days",
+        harvest: "When pods turn yellow-brown and seeds are hard",
+        care: "Avoid waterlogging. Inoculate seeds with rhizobium bacteria for better nitrogen fixation."
+      }
+    ];
+
+    // DOM elements
+    const cropsGrid = document.getElementById('cropsGrid');
+    const searchInput = document.getElementById('searchInput');
+    const categoryButtons = document.querySelectorAll('.cat');
+    const cropModal = document.getElementById('cropModal');
+    const modalClose = document.getElementById('modalClose');
+
+    // Initialize page
+    // Initialize - Set username if available
+function initializePage() {
+    // 1. Switch to sessionStorage to align with library.html's pattern
+    const savedUser = sessionStorage.getItem("userName"); 
+    
+    // 2. Determine the name to display, defaulting to "User" if not found or empty
+    const userNameToDisplay = (savedUser && savedUser.trim() !== "") ? savedUser : "User"; 
+    
+    // 3. Set the username in the header element (using the correct ID from your HTML)
+    document.getElementById("userNameDisplay").textContent = userNameToDisplay;
+    
+    // Display crops (will be populated from API or sample data)
+    loadCropsData();
+}
+
+// Call initialize when page loads
+document.addEventListener('DOMContentLoaded', initializePage);
+
+    // Load crops data from API or use sample data
+    function loadCropsData() {
+      fetch("http://localhost:5000/api/crops")
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return res.json();
+        })
+        .then(data => {
+          cropsData = data;
+          displayCrops(cropsData);
+        })
+        .catch(err => {
+          console.error("Error fetching crops:", err);
+          console.log("Using sample data instead");
+          cropsData = sampleCropsData;
+          displayCrops(cropsData);
+        });
+    }
+
+    // Display crops
+    function displayCrops(crops) {
+      cropsGrid.innerHTML = '';
+      
+      if (crops.length === 0) {
+        cropsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No crops found matching your criteria.</p>';
+        return;
+      }
+      
+      crops.forEach(crop => {
+        const cropCard = document.createElement('div');
+        cropCard.className = 'crop-card';
+        cropCard.innerHTML = `
+          <div class="crop-image">
+            <img src="${crop.image}" alt="${crop.name}">
+          </div>
+          <div class="crop-info">
+            <h3 class="crop-name">${crop.name}</h3>
+            <span class="crop-type">${crop.type}</span>
+            <div class="crop-details">
+              <div class="detail-item">
+                <span class="detail-label">Season</span>
+                <span class="detail-value">${crop.season}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Maturity</span>
+                <span class="detail-value">${crop.maturity}</span>
+              </div>
+            </div>
+            <button class="view-details-btn" data-id="${crop.id}">View Details</button>
+          </div>
+        `;
+        
+        cropsGrid.appendChild(cropCard);
+      });
+      
+      // Add event listeners to view details buttons
+      document.querySelectorAll('.view-details-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const cropId = parseInt(this.getAttribute('data-id'));
+          showCropDetails(cropId);
+        });
+      });
+    }
+
+    // Show crop details in modal
+    function showCropDetails(cropId) {
+      const crop = cropsData.find(c => c.id === cropId);
+      
+      if (crop) {
+        document.getElementById('modalImage').src = crop.image;
+        document.getElementById('modalTitle').textContent = crop.name;
+        document.getElementById('modalType').textContent = crop.type;
+        document.getElementById('modalOverview').textContent = crop.overview;
+        document.getElementById('modalSeason').textContent = crop.season;
+        document.getElementById('modalSoil').textContent = crop.soil;
+        document.getElementById('modalTemp').textContent = crop.temperature;
+        document.getElementById('modalWater').textContent = crop.water;
+        document.getElementById('modalGermination').textContent = crop.germination;
+        document.getElementById('modalMaturity').textContent = crop.maturity;
+        document.getElementById('modalHarvest').textContent = crop.harvest;
+        document.getElementById('modalCare').textContent = crop.care;
+        
+        cropModal.style.display = 'flex';
+      }
+    }
+
+    // Filter crops based on search and category
+    function filterCrops() {
+      const searchText = searchInput.value.toLowerCase();
+      const activeCategory = document.querySelector('.cat.active').getAttribute('data-category');
+      
+      let filteredCrops = cropsData;
+      
+      // Filter by search text
+      if (searchText) {
+        filteredCrops = filteredCrops.filter(crop => 
+          crop.name.toLowerCase().includes(searchText) || 
+          (crop.type && crop.type.toLowerCase().includes(searchText)) ||
+          (crop.season && crop.season.toLowerCase().includes(searchText))
+        );
+      }
+      
+      // Filter by category
+      if (activeCategory !== 'all') {
+        filteredCrops = filteredCrops.filter(crop =>
+          crop.type && crop.type.toLowerCase().trim() === activeCategory.toLowerCase().trim()
+        );
+      }
+
+      displayCrops(filteredCrops);
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', filterCrops);
+    
+    categoryButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        filterCrops();
+      });
+    });
+    
+    modalClose.addEventListener('click', function() {
+      cropModal.style.display = 'none';
+    });
+    
+    cropModal.addEventListener('click', function(e) {
+      if (e.target === cropModal) {
+        cropModal.style.display = 'none';
+      }
+    });
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', initializePage);
+  </script>
+  <script>
+    window.gtranslateSettings = {
+      "default_language": "en",
+      "languages": ["en", "mr", "hi"],
+      "wrapper_selector": ".gtranslate_wrapper"
+    };
+  </script>
+  <script src="https://cdn.gtranslate.net/widgets/latest/ln.js" defer></script>
+</body>
+</html>

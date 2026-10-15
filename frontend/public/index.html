@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Green Guide - Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      background: url("https://i.pinimg.com/1200x/40/73/d4/4073d4378fad895860ee2285fedf3a74.jpg") 
+                  no-repeat center center/cover;
+      position: relative;
+      font-family: "Poppins", sans-serif;
+      overflow: hidden;
+      color: white;
+      text-align: center;
+    }
+
+    /* Dark overlay */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(2px);
+      z-index: 0;
+    }
+
+    /* NAVBAR */
+    header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      position: relative;
+      z-index: 2;
+      animation: slideDown 0.8s ease-out;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #00e676;
+      animation: pulse 4s infinite;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 600;
+      transition: 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -5px;
+      left: 0;
+      background-color: #00e676;
+      transition: width 0.3s ease;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    nav a:hover {
+      color: #00e676;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 1;
+      margin-top: auto;
+      margin-bottom: auto;
+      animation: fadeInDown 1.2s ease-out;
+    }
+    h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+    h1 .green {
+      background: linear-gradient(135deg, #00e676, #28a745);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    .btn {
+      padding: 15px 45px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #28a745, #5cd95c);
+      border-radius: 50px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.35s ease;
+      text-decoration: none;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+    .btn:hover::before {
+      left: 100%;
+    }
+    .btn:hover {
+      transform: translateY(-4px) scale(1.05);
+      background: linear-gradient(135deg, #5cd95c, #28a745);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      background: rgba(0,0,0,0.6);
+      padding: 15px;
+      text-align: center;
+      font-size: 0.9rem;
+      animation: fadeInUp 1s ease-out 0.5s both;
+    }
+    footer a {
+      color: #00e676;
+      text-decoration: none;
+      margin: 0 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    footer a:hover {
+      text-decoration: underline;
+      transform: translateY(-2px);
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 8px rgba(0, 230, 118, 0.5); }
+      to   { text-shadow: 0 0 18px rgba(0, 230, 118, 0.9); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    /* Agriculture Info Panel */
+    .agri-info-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(26, 46, 26, 0.9);
+      border-left: 4px solid #00e676;
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 300px;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      animation: slideInRight 0.5s ease-out;
+    }
+    
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(100px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .agri-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      color: #00e676;
+    }
+    
+    .agri-header i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+      animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+      40% {transform: translateY(-10px);}
+      60% {transform: translateY(-5px);}
+    }
+    
+    .agri-content {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #e0e0e0;
+    }
+    
+    .agri-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: #aaa;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+    
+    .agri-close:hover {
+      color: white;
+      transform: rotate(90deg);
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-content {
+      background: linear-gradient(135deg, #1a2e1a, #2d4a2d);
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: relative;
+      animation: modalFadeIn 0.3s ease-out;
+    }
+    
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-30px) scale(0.9); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      color: white;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .close-btn:hover {
+      color: #00e676;
+      transform: rotate(90deg);
+    }
+    
+    .contact-info {
+      text-align: left;
+      margin-top: 20px;
+    }
+    
+    .contact-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      transition: transform 0.3s;
+    }
+    
+    .contact-item:hover {
+      transform: translateX(5px);
+    }
+    
+    .contact-icon {
+      width: 40px;
+      height: 40px;
+      background-color: #00e676;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 15px;
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+    
+    .contact-text {
+      flex: 1;
+    }
+    
+    .contact-text h3 {
+      margin: 0 0 5px 0;
+      font-size: 1.1rem;
+      color: #00e676;
+    }
+    
+    .contact-text p {
+      margin: 0;
+      color: #e0e0e0;
+    }
+    
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 25px;
+    }
+    
+    .social-link {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      color: white;
+      text-decoration: none;
+      font-size: 1.2rem;
+    }
+    
+    .social-link:hover {
+      background-color: #00e676;
+      transform: translateY(-3px) rotate(5deg);
+    }
+    
+    /* Background elements animation */
+    body::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 50%, rgba(0, 230, 118, 0.1) 0%, transparent 50%);
+      animation: pulseBackground 8s infinite alternate;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    @keyframes pulseBackground {
+      0% { opacity: 0.3; transform: scale(1); }
+      100% { opacity: 0.5; transform: scale(1.1); }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <header>
+    <div class="logo">🌱 The Green Guide</div>
+    <nav>
+      <a id="nav-home">Home</a>
+      <a id="nav-about">About</a>
+      <a id="nav-contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>Welcome to <span class="green">The Green Guide</span></h1>
+    <a href="/login" class="btn">LOGIN</a>
+  </div>
+
+  <!-- Agriculture Info Panel -->
+  <div class="agri-info-panel" id="agriInfo">
+    <button class="agri-close" id="closeAgriInfo">×</button>
+    <div class="agri-header">
+      <i class="fas fa-seedling"></i>
+      <h3 id="agri-title">Agriculture Tip</h3>
+    </div>
+    <div class="agri-content" id="agri-content">
+      Rotate your crops seasonally to maintain soil health and reduce pest problems.
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 The Green Guide | <a id="footer-privacy">Privacy Policy</a> | <a id="footer-terms">Terms</a></p>
+  </footer>
+  
+  <!-- Contact Modal -->
+  <div class="modal" id="contact-modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-contact">&times;</button>
+      <h2 style="text-align: center; margin-top: 0; color: #00e676;">Contact Us</h2>
+      <p style="text-align: center; color: #e0e0e0;">We'd love to hear from you! Reach out through any of these channels.</p>
+      
+      <div class="contact-info">
+        <div class="contact-item">
+          <div class="contact-icon">📧</div>
+          <div class="contact-text">
+            <h3>Email</h3>
+            <p>info@thegreenguide.com</p>
+          </div>
+        </div>
+        
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div class="contact-text">
+            <h3>Phone</h3>
+            <p>+1 (555) 123-4567</p>
+          </div>
+        </div>
+        
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div class="contact-text">
+            <h3>Address</h3>
+            <p>123 Eco Street, Green City, Earth 12345</p>
+          </div>
+        </div>
+        
+        <div class="contact-item">
+          <div class="contact-icon">🕒</div>
+          <div class="contact-text">
+            <h3>Business Hours</h3>
+            <p>Monday-Friday: 9am-5pm EST</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="social-links">
+        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div class="modal" id="about-modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-about">&times;</button>
+      <h2 style="text-align: center; margin-top: 0; color: #00e676;">About The Green Guide</h2>
+      
+      <div style="text-align: center; color: #e0e0e0; line-height: 1.6;">
+        <p>The Green Guide is dedicated to promoting sustainable agricultural practices and connecting farmers with valuable resources.</p>
+        
+        <p>Our mission is to support the agricultural community through education, innovation, and collaboration.</p>
+        
+        <p>We believe in sustainable farming that respects the environment while providing nutritious food for communities.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Home Modal -->
+  <div class="modal" id="home-modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-home">&times;</button>
+      <h2 style="text-align: center; margin-top: 0; color: #00e676;">The Green Guide - Home</h2>
+      
+      <div style="text-align: center; color: #e0e0e0; line-height: 1.6;">
+        <p>Welcome to our agricultural resource center. Here you'll find information about sustainable farming practices, crop management, and agricultural innovations.</p>
+        
+        <p>Explore our resources to enhance your farming knowledge and improve your agricultural productivity.</p>
+        
+        <p>Whether you're a seasoned farmer or just starting out, we have valuable information to help you succeed.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Agriculture information data
+    const agriInfoData = {
+      home: {
+        title: "Farming Tip",
+        content: "Rotate your crops seasonally to maintain soil health and reduce pest problems. This practice also helps manage soil nutrients effectively."
+      },
+      about: {
+        title: "Sustainable Agriculture",
+        content: "Did you know? Sustainable farming practices can increase crop yields by up to 79% while reducing environmental impact."
+      },
+      contact: {
+        title: "Expert Support",
+        content: "Our agricultural experts are available to help you with crop selection, soil management, and sustainable farming techniques."
+      }
+    };
+
+    // DOM elements
+    const agriInfoPanel = document.getElementById('agriInfo');
+    const agriTitle = document.getElementById('agri-title');
+    const agriContent = document.getElementById('agri-content');
+    const closeAgriInfoBtn = document.getElementById('closeAgriInfo');
+    
+    const navHome = document.getElementById('nav-home');
+    const navAbout = document.getElementById('nav-about');
+    const navContact = document.getElementById('nav-contact');
+    
+    const contactModal = document.getElementById('contact-modal');
+    const aboutModal = document.getElementById('about-modal');
+    const homeModal = document.getElementById('home-modal');
+    
+    const closeContactBtn = document.getElementById('close-contact');
+    const closeAboutBtn = document.getElementById('close-about');
+    const closeHomeBtn = document.getElementById('close-home');
+    
+    const footerPrivacy = document.getElementById('footer-privacy');
+    const footerTerms = document.getElementById('footer-terms');
+
+    // Show agriculture info function
+    function showAgriInfo(type) {
+      agriTitle.textContent = agriInfoData[type].title;
+      agriContent.textContent = agriInfoData[type].content;
+      agriInfoPanel.style.display = 'block';
+    }
+
+    // Event listeners
+    navHome.addEventListener('click', function() {
+      homeModal.style.display = 'flex';
+      showAgriInfo('home');
+    });
+    
+    navAbout.addEventListener('click', function() {
+      aboutModal.style.display = 'flex';
+      showAgriInfo('about');
+    });
+    
+    navContact.addEventListener('click', function() {
+      contactModal.style.display = 'flex';
+      showAgriInfo('contact');
+    });
+    
+    // Close buttons
+    closeAgriInfoBtn.addEventListener('click', function() {
+      agriInfoPanel.style.display = 'none';
+    });
+    
+    closeContactBtn.addEventListener('click', function() {
+      contactModal.style.display = 'none';
+    });
+    
+    closeAboutBtn.addEventListener('click', function() {
+      aboutModal.style.display = 'none';
+    });
+    
+    closeHomeBtn.addEventListener('click', function() {
+      homeModal.style.display = 'none';
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+      if (event.target === contactModal) {
+        contactModal.style.display = 'none';
+      }
+      if (event.target === aboutModal) {
+        aboutModal.style.display = 'none';
+      }
+      if (event.target === homeModal) {
+        homeModal.style.display = 'none';
+      }
+    });
+    
+    // Footer links
+    footerPrivacy.addEventListener('click', function() {
+      alert('Privacy Policy would be shown here.');
+    });
+    
+    footerTerms.addEventListener('click', function() {
+      alert('Terms and Conditions would be shown here.');
+    });
+    
+    // Show initial agriculture info after page load
+    setTimeout(function() {
+      showAgriInfo('home');
+    }, 2000);
+  </script>
+</body>
+</html>

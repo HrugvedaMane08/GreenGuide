@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reference Library - Green Guide</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: #f4f7f5;
+      color: #1c2b24;
+    }
+
+    /* Wrapper for sidebar + main content */
+    .main-wrapper {
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    
+    /* Main Content Styles */
+    .main {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      background-color:  #0e3b2e;
+      padding: 15px 24px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .topbar h2 {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* GTranslate Styling for Pill Button */
+    .gtranslate_wrapper {
+      order: 2; /* Positions it correctly in the flex layout */
+    }
+
+    .gtranslate_wrapper select {
+      padding: 10px 20px 10px 15px;
+      border-radius: 999px; 
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      
+      background-color: #0e7a5a; 
+      color: white;
+      
+      cursor: pointer;
+      height: 40px;
+      
+      /* Remove default dropdown appearance for a cleaner look */
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+    /* End GTranslate Styling */
+    
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      color: white;
+      /* ADDED: Space between language selector and user profile */
+      margin-left: 20px;
+      order: 3;
+    }
+    
+    .user img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    
+    /* Search Bar */
+    .search-container {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .search-box {
+      flex: 1;
+      position: relative;
+    }
+    
+    
+    .search-container input {
+      width: 100%;
+      padding: 12px 20px 12px 45px;
+      border: 1px solid #cfe3d9;
+      border-radius: 999px;
+      font-size: 1rem;
+      outline: none;
+    }
+    
+    .search-container button {
+      background: #0e7a5a;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .search-container button:hover {
+      background: #0b5f46;
+    }
+    
+    /* Back Button */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: #0e7a5a;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 999px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    
+    .back-btn:hover {
+      background: #0b5f46;
+    }
+    
+    /* Reference Library Content */
+    .container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    
+  
+    /* Resources Grid */
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    
+    .resource-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(20, 48, 38, 0.06);
+      padding: 1.5rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .resource-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .resource-card h3 {
+      color: #0e7a5a;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e7f7ef;
+    }
+    
+    .resource-card p {
+      color: #486a5b;
+      margin-bottom: 1.5rem;
+    }
+    
+    .btn {
+      display: inline-block;
+      background: #0e7a5a;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: background 0.3s;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    
+    .btn:hover {
+      background: #0b5f46;
+    }
+    
+    /* Resource Items */
+    .resource-items {
+      margin-top: 15px;
+    }
+    
+    .resource-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #f8fbf9;
+      border-radius: 8px;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+    
+    .resource-item:hover {
+      background: #e7f7ef;
+    }
+    
+    .resource-item i {
+      margin-right: 12px;
+      font-size: 18px;
+      color: #0e7a5a;
+    }
+    
+    .resource-item a {
+      color: #1c2b24;
+      text-decoration: none;
+      flex: 1;
+    }
+    
+    .resource-item a:hover {
+      color: #0e7a5a;
+      text-decoration: underline;
+    }
+    
+    /* Filter buttons */
+    .filter-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: 8px 16px;
+      background: white;
+      border: 1px solid #0e7a5a;
+      border-radius: 50px;
+      color: #0e7a5a;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .filter-btn.active, .filter-btn:hover {
+      background: #0e7a5a;
+      color: white;
+    }
+    
+    /* No results message */
+    .no-results {
+      text-align: center;
+      padding: 30px;
+      color: #486a5b;
+      font-style: italic;
+      display: none;
+      grid-column: 1 / -1;
+    }
+    
+    /* Resource Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #486a5b;
+    }
+    
+    .modal-header {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #e7f7ef;
+    }
+    
+    .modal-header h3 {
+      color: #0e7a5a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .modal-body {
+      margin-bottom: 1.5rem;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-wrapper">
+    <div class="main">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <h1 style="color:  #a5e1c9;"><i class="fas fa-leaf"></i>Reference Library - Green Guide</h1>
+        </div>
+
+        <div class="gtranslate_wrapper"></div>
+        
+        <div class="user">
+          <span id="userName">Farmer User</span>
+          <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="user">
+        </div>
+      </div>
+
+      <div style="padding: 15px 24px 0;">
+        <a href="dashboard.html" id="dashboardBackBtn" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+      
+      <div class="search-container">
+        <input type="text" placeholder="Search for resources..." id="searchInput">
+        <button id="searchBtn"><i class="fas fa-search"></i> Search</button>
+      </div>
+      
+      <div class="filter-container">
+        <button class="filter-btn active" data-filter="all">All Resources</button>
+        <button class="filter-btn" data-filter="books">Books</button>
+        <button class="filter-btn" data-filter="videos">Videos</button>
+        <button class="filter-btn" data-filter="research">Research</button>
+        <button class="filter-btn" data-filter="schemes">Government Schemes</button>
+      </div>
+      
+      <div class="container">
+        <div class="no-results" id="noResults">
+          <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+          <h3>No resources found</h3>
+          <p>Try a different search term or filter</p>
+        </div>
+        
+        <div class="resources-grid" id="resourcesGrid">
+          <div class="resource-card" data-type="books">
+            <h3>
+              <i class="fas fa-book"></i> Book References
+            </h3>
+            <p>Comprehensive guides on crop rotation, soil management, and sustainable farming practices.</p>
+            
+            <div class="resource-items">
+              <div class="resource-item" data-title="The Organic Farmer's Business Handbook" data-type="books" data-desc="A complete guide to running a successful organic farming business.">
+                <i class="fas fa-book-open"></i>
+                <span>The Organic Farmer's Business Handbook</span>
+              </div>
+              <div class="resource-item" data-title="Sustainable Agriculture: Principles and Practices" data-type="books" data-desc="Learn about sustainable farming methods that protect the environment.">
+                <i class="fas fa-book-open"></i>
+                <span>Sustainable Agriculture: Principles and Practices</span>
+              </div>
+              <div class="resource-item" data-title="Crop Rotation and Soil Management" data-type="books" data-desc="Essential techniques for maintaining soil health through crop rotation.">
+                <i class="fas fa-book-open"></i>
+                <span>Crop Rotation and Soil Management</span>
+              </div>
+              <div class="resource-item" data-title="Water Conservation in Farming" data-type="books" data-desc="Strategies for efficient water use in agricultural operations.">
+                <i class="fas fa-book-open"></i>
+                <span>Water Conservation in Farming</span>
+              </div>
+            </div>
+            
+            <a class="btn" href="#" onclick="showAllResources('books')">
+              <i class="fas fa-external-link-alt"></i> View All Books
+            </a>
+          </div>
+          
+          <div class="resource-card" data-type="videos">
+            <h3>
+              <i class="fab fa-youtube"></i> Video Tutorials
+            </h3>
+            <p>Step-by-step tutorials for implementing new farming technologies and methods.</p>
+            
+            <div class="resource-items">
+              <div class="resource-item" data-title="Modern Irrigation Techniques" data-type="videos" data-desc="Learn about the latest irrigation methods to conserve water and improve crop yields.">
+                <i class="fas fa-play-circle"></i>
+                <span>Modern Irrigation Techniques</span>
+              </div>
+              <div class="resource-item" data-title="Organic Pest Control Methods" data-type="videos" data-desc="Natural ways to protect your crops from pests without chemicals.">
+                <i class="fas fa-play-circle"></i>
+                <span>Organic Pest Control Methods</span>
+              </div>
+              <div class="resource-item" data-title="Soil Health Improvement" data-type="videos" data-desc="Techniques to enhance your soil quality for better crop production.">
+                <i class="fas fa-play-circle"></i>
+                <span>Soil Health Improvement</span>
+              </div>
+              <div class="resource-item" data-title="Crop Rotation Strategies" data-type="videos" data-desc="How to effectively implement crop rotation for sustainable farming.">
+                <i class="fas fa-play-circle"></i>
+                <span>Crop Rotation Strategies</span>
+              </div>
+            </div>
+            
+            <a class="btn" href="#" onclick="showAllResources('videos')">
+              <i class="fas fa-external-link-alt"></i> Browse All Videos
+            </a>
+          </div>
+          
+          <div class="resource-card" data-type="research">
+            <h3>
+              <i class="fas fa-file-alt"></i> Research Papers
+            </h3>
+            <p>Scientific research and studies on modern agricultural techniques and innovations.</p>
+            
+            <div class="resource-items">
+              <div class="resource-item" data-title="Impact of Climate Change on Crop Yields" data-type="research" data-desc="Research on how changing climate patterns affect agricultural productivity.">
+                <i class="fas fa-file-pdf"></i>
+                <span>Impact of Climate Change on Crop Yields</span>
+              </div>
+              <div class="resource-item" data-title="Sustainable Farming Practices Review" data-type="research" data-desc="A comprehensive review of sustainable farming methods from around the world.">
+                <i class="fas fa-file-pdf"></i>
+                <span>Sustainable Farming Practices Review</span>
+              </div>
+              <div class="resource-item" data-title="Advanced Irrigation Systems Study" data-type="research" data-desc="Research on the efficiency of different irrigation systems in various climates.">
+                <i class="fas fa-file-pdf"></i>
+                <span>Advanced Irrigation Systems Study</span>
+              </div>
+              <div class="resource-item" data-title="Soil Microbiome and Plant Health" data-type="research" data-desc="Study on how soil microorganisms contribute to plant growth and health.">
+                <i class="fas fa-file-pdf"></i>
+                <span>Soil Microbiome and Plant Health</span>
+              </div>
+            </div>
+            
+            <a class="btn" href="#" onclick="showAllResources('research')">
+              <i class="fas fa-external-link-alt"></i> Explore All Research
+            </a>
+          </div>
+          
+          <div class="resource-card" data-type="schemes">
+            <h3>
+              <i class="fas fa-file-invoice-dollar"></i> Government Schemes
+            </h3>
+            <p>Information about government agricultural schemes, subsidies, and financial assistance programs.</p>
+            
+            <div class="resource-items">
+              <div class="resource-item" data-title="PM-KISAN Scheme" data-type="schemes" data-desc="Direct income support scheme for farmers with land holdings.">
+                <i class="fas fa-hand-holding-usd"></i>
+                <span>PM-KISAN Scheme</span>
+              </div>
+              <div class="resource-item" data-title="Pradhan Mantri Fasal Bima Yojana" data-type="schemes" data-desc="Crop insurance scheme to protect farmers against crop loss.">
+                <i class="fas fa-shield-alt"></i>
+                <span>Pradhan Mantri Fasal Bima Yojana</span>
+              </div>
+              <div class="resource-item" data-title="National Mission for Sustainable Agriculture" data-type="schemes" data-desc="Promotes sustainable agriculture practices through various subsidies.">
+                <i class="fas fa-seedling"></i>
+                <span>National Mission for Sustainable Agriculture</span>
+              </div>
+              <div class="resource-item" data-title="Paramparagat Krishi Vikas Yojana" data-type="schemes" data-desc="Promotes organic farming through cluster approach.">
+                <i class="fas fa-recycle"></i>
+                <span>Paramparagat Krishi Vikas Yojana</span>
+              </div>
+            </div>
+            
+            <a class="btn" href="#" onclick="showAllResources('schemes')">
+              <i class="fas fa-external-link-alt"></i> View All Schemes
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="resourceModal">
+    <div class="modal-content">
+      <span class="close-modal" id="closeModal">&times;</span>
+      <div class="modal-header">
+        <h3 id="modalTitle"><i class="fas fa-book"></i> Resource Title</h3>
+      </div>
+      <div class="modal-body">
+        <p id="modalDescription">Resource description will appear here.</p>
+        <div id="modalDetails">
+          <p><strong>Type:</strong> <span id="modalType">Book</span></p>
+          <p><strong>Added:</strong> <span id="modalDate">January 1, 2023</span></p>
+        </div>
+
+        <div id="modalGuide" style="margin-top:16px;"></div>
+
+        <div id="modalEmbed" style="margin-top:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample resource data with more details
+    const resourceData = {
+      "The Organic Farmer's Business Handbook": {
+        type: "books",
+        description: "A complete guide to running a successful organic farming business.",
+        link: "https://www.amazon.in/Organic-Farmers-Business-Handbook-Complete/dp/1603581421",
+        date: "March 15, 2023"
+      },
+      "Sustainable Agriculture: Principles and Practices": {
+        type: "books",
+        description: "Learn about sustainable farming methods that protect the environment.",
+        link: "https://www.amazon.in/Sustainable-Agriculture-Principles-Donnie-Stallone/dp/1639875107/ref=sr_1_1?crid=1C5HNTCBYN96X&dib=eyJ2IjoiMSJ9.8jsACG2V2pLJQTuujAq0tVFnj1hndMg3zmC9PwU6ygAX1wi_Ee1ZCJoTbDSEeZnJuTp1FK75VlqOT6yVwvED4IyACRKpm06C6izj5jPu2WUjcXMhushYF3Ojr2yZv6anJ5QFfetzUMX4EVuTOWdf5m1FDf8nmubK0TLYjUQDbgqwa0fuX1eidPv-bQcN57pG4xLHuqSmRzqnKMubK5NCBX1RddYVLmnqHueLadk8hmg.vp29qg378EDrEw-boZV3VSIF6sUJQfZ2IXrguJ_XT4E&dib_tag=se&keywords=Sustainable+Agriculture%3A+Principles+and+Practices&qid=1756709200&sprefix=sustainable+agriculture+principles+and+practices%2Caps%2C183&sr=8-1",
+        date: "February 3, 2023"
+      },
+      "Crop Rotation and Soil Management": {
+        type: "books",
+        description: "Essential techniques for maintaining soil health through crop rotation.",
+        link: "https://www.amazon.in/Rotations-Management-Eastern-Classic-Reprint/dp/1390292649/ref=sr_1_1?crid=2G1BX2CDOKDNO&dib=eyJ2IjoiMSJ9.mnx3h6Fqhhn-qMX1z5MvcTnSHO7oScfSSObrR1mhLRNcyQC2Th8CbJMCcxnfX053hjATM-BwPdgPM9K00EoYPHXRM90liWf6u9xzNTb0OnyuMfLAFLUd6FTq1-nSZo0qCBwxTFZkA_rgldaZ0dKoeYERR5ZFMDUxCIsvC9yajtcS21-uyA4SAw6W8001-Ena_iXXD_OU9sQiLRg4hV3budnkD0-F64RsWoxaS8VIppQ.2P5NH6Yg0cWhS0fvHf8mxM5id6Eddj5hZDSq0BU9Djw&dib_tag=se&keywords=Crop+Rotation+and+Soil+Management&qid=1756709302&sprefix=crop+rotation+and+soil+management%2Caps%2C277&sr=8-1",
+        date: "January 20, 2023"
+      },
+      "Water Conservation in Farming": {
+        type: "books",
+        description: "Strategies for efficient water use in agricultural operations.",
+        link: "https://www.amazon.in/Water-Conservation-Utilization-Agriculture-Production/dp/818930478X",
+        date: "April 5, 2023"
+      },
+      "Modern Irrigation Techniques": {
+        type: "videos",
+        description: "Learn about the latest irrigation methods to conserve water and improve crop yields.",
+        link: "https://www.youtube.com/watch?v=PoV2YV57afI",
+        date: "March 28, 2023"
+      },
+      "Organic Pest Control Methods": {
+        type: "videos",
+        description: "Natural ways to protect your crops from pests without chemicals.",
+        link: "https://www.youtube.com/watch?v=hXlSicZE9jI",
+        date: "February 14, 2023"
+      },
+      "Soil Health Improvement": {
+        type: "videos",
+        description: "Techniques to enhance your soil quality for better crop production.",
+        link: "https://www.youtube.com/watch?v=YN7nUHkvxwo",
+        date: "January 8, 2023"
+      },
+      "Crop Rotation Strategies": {
+        type: "videos",
+        description: "How to effectively implement crop rotation for sustainable farming.",
+        link: "https://www.youtube.com/watch?v=xmHEaSiYjYE",
+        date: "April 12, 2023"
+      },
+      "Impact of Climate Change on Crop Yields": {
+        type: "research",
+        description: "Research on how changing climate patterns affect agricultural productivity.",
+        link: "https://www.researchgate.net/publication/369717213_Climate_change_its_impact_on_crop_production_challenges_and_possible_solutions",
+        date: "March 5, 2023"
+      },
+      "Sustainable Farming Practices Review": {
+        type: "research",
+        description: "A comprehensive review of sustainable farming methods from around the world.",
+        link: "https://www.researchgate.net/publication/371964607_Advancing_Sustainable_Agriculture_A_Comprehensive_Review_for_Optimizing_Food_Production_and_Environmental_Conservation",
+        date: "February 22, 2023"
+      },
+      "Advanced Irrigation Systems Study": {
+        type: "research",
+        description: "Research on the efficiency of different irrigation systems in various climates.",
+        link: "https://www.researchgate.net/publication/235935034_Efficiency_of_Irrigation_Water_Use_A_Review_from_the_Perspectives_of_Multiple_Disciplines",
+        date: "January 30, 2023"
+      },
+      "Soil Microbiome and Plant Health": {
+        type: "research",
+        description: "Study on how soil microorganisms contribute to plant growth and health.",
+        link: "https://plantarc.com/wp-content/uploads/2024/12/Plant-Microbe-Interactions-Implications-for-Growth-and-Soil-Health.pdf",
+        date: "April 18, 2023"
+      },
+      // Government Schemes Data
+      "PM-KISAN Scheme": {
+        type: "schemes",
+        description: "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN) is a Central Sector Scheme with 100% funding from Government of India. Under the scheme, income support of ₹6,000 per year is provided to all farmer families across the country in three equal installments of ₹2,000 each every four months.",
+        link: "https://pmkisan.gov.in/",
+        date: "February 1, 2019",
+        eligibility: "All landholding farmers' families",
+        benefits: "₹6,000 per year in three installments"
+      },
+      "Pradhan Mantri Fasal Bima Yojana": {
+        type: "schemes",
+        description: "Pradhan Mantri Fasal Bima Yojana (PMFBY) aims to support production in agriculture by providing affordable crop insurance to ensure comprehensive risk cover for crops against all non-preventable natural risks.",
+        link: "https://pmfby.gov.in/",
+        date: "January 13, 2016",
+        eligibility: "All farmers including sharecroppers and tenant farmers",
+        benefits: "Premium subsidy, comprehensive risk coverage"
+      },
+      "National Mission for Sustainable Agriculture": {
+        type: "schemes",
+        description: "The National Mission for Sustainable Agriculture (NMSA) aims to promote sustainable agriculture practices that are best suited to the specific agro-ecology focusing on integrated farming, soil health management, and synergizing resource conservation.",
+        link: "https://nmsa.dac.gov.in/",
+        date: "2014-2015",
+        eligibility: "Farmers, Farmer Producer Organizations, NGOs",
+        benefits: "Subsidies for sustainable agriculture practices"
+      },
+      "Paramparagat Krishi Vikas Yojana": {
+        type: "schemes",
+        description: "Paramparagat Krishi Vikas Yojana (PKVY) is an elaborated component of Soil Health Management (SHM) of National Mission of Sustainable Agriculture (NMSA). PKVY aims at development of models of excellence in organic farming through a mix of traditional wisdom and modern science.",
+        link: "https://pgsindia-ncof.gov.in/pkvy/index.aspx",
+        date: "2015",
+        eligibility: "Farmers willing to practice organic farming",
+        benefits: "Financial assistance of ₹50,000 per hectare/3 years"
+      }
+    };
+
+    // DOM Elements
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const resourceItems = document.querySelectorAll('.resource-item');
+    const resourceCards = document.querySelectorAll('.resource-card');
+    const noResultsMessage = document.getElementById('noResults');
+    const resourcesGrid = document.getElementById('resourcesGrid');
+    const resourceModal = document.getElementById('resourceModal');
+    const closeModal = document.getElementById('closeModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
+    const modalType = document.getElementById('modalType');
+    const modalDate = document.getElementById('modalDate');
+    const modalGuide = document.getElementById('modalGuide');
+    const dashboardBackBtn = document.getElementById('dashboardBackBtn');
+
+    // Current active filter
+    let currentFilter = 'all';
+    let currentResource = null;
+
+    // Initialize page
+    function initPage() {
+      // Check if user is logged in
+      const username = sessionStorage.getItem('userName') || 'Farmer User'; 
+      
+      // Set username
+      document.getElementById('userName').textContent = username;
+      
+      // Set up event listeners
+      setupEventListeners();
+      
+      // Show all resources initially
+      filterResources('all');
+    }
+
+    // Set up all event listeners
+    function setupEventListeners() {
+      // Search functionality
+      searchBtn.addEventListener('click', performSearch);
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performSearch();
+      });
+      
+      // Filter functionality
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const filter = button.getAttribute('data-filter');
+          setActiveFilter(button);
+          filterResources(filter);
+        });
+      });
+      
+      // Resource item clicks
+      resourceItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const title = item.getAttribute('data-title');
+          showResourceDetails(title);
+        });
+      });
+      
+      // Modal functionality
+      closeModal.addEventListener('click', () => {
+        resourceModal.style.display = 'none';
+      });
+      
+      // Close modal when clicking outside
+      window.addEventListener('click', (e) => {
+        if (e.target === resourceModal) {
+          resourceModal.style.display = 'none';
+        }
+      });
+      
+      // Navigation
+      dashboardBackBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'dashboard.html';
+      });
+    }
+
+    // Set active filter button
+    function setActiveFilter(activeButton) {
+      filterButtons.forEach(button => {
+        button.classList.remove('active');
+      });
+      activeButton.classList.add('active');
+      currentFilter = activeButton.getAttribute('data-filter');
+    }
+
+    // Filter resources based on selected filter
+    function filterResources(filter) {
+      let visibleCount = 0;
+      
+      resourceCards.forEach(card => {
+        if (filter === 'all' || card.getAttribute('data-type') === filter) {
+          card.style.display = 'block';
+          
+          // Reset visibility of individual items inside cards before a search might run
+          card.querySelectorAll('.resource-item').forEach(item => {
+            item.style.display = "flex";
+          });
+
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      // Show no results message if no cards are visible
+      if (visibleCount === 0) {
+        noResultsMessage.style.display = 'block';
+        resourcesGrid.style.display = 'none';
+      } else {
+        noResultsMessage.style.display = 'none';
+        resourcesGrid.style.display = 'grid';
+      }
+    }
+
+    // Perform search across all resources
+    function performSearch() {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      
+      if (searchTerm === '') {
+        // If search is empty, show all items based on current filter
+        const activeButton = document.querySelector('.filter-btn.active');
+        if (activeButton) {
+          filterResources(activeButton.getAttribute('data-filter'));
+        }
+        return;
+      }
+      
+      let foundItems = 0;
+      
+      // Search through all resource items
+      resourceItems.forEach(item => {
+        const itemText = item.textContent.toLowerCase();
+        const itemType = item.getAttribute('data-type');
+        
+        // Check if item matches search term and current filter
+        if (itemText.includes(searchTerm) && 
+            (currentFilter === 'all' || itemType === currentFilter)) {
+          item.style.display = "flex";
+          foundItems++;
+        } else {
+          item.style.display = "none";
+        }
+      });
+      
+      // Show/hide cards based on whether they have visible items
+      resourceCards.forEach(card => {
+        const itemsInCard = card.querySelectorAll('.resource-item');
+        let hasVisibleItems = false;
+        
+        itemsInCard.forEach(item => {
+          if (item.style.display !== 'none') {
+            hasVisibleItems = true;
+          }
+        });
+        
+        if (hasVisibleItems) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      // Show no results message if nothing found
+      if (foundItems === 0) {
+        noResultsMessage.style.display = 'block';
+        resourcesGrid.style.display = 'none';
+      } else {
+        noResultsMessage.style.display = 'none';
+        resourcesGrid.style.display = 'grid';
+      }
+    }
+
+    // Show resource details in modal
+    function showResourceDetails(title) {
+      if (resourceData[title]) {
+        currentResource = resourceData[title];
+        
+        // Update modal content
+        modalTitle.innerHTML = `<i class="fas fa-${getIconForType(currentResource.type)}"></i> ${title}`;
+        modalDescription.textContent = currentResource.description;
+        modalType.textContent = capitalizeFirstLetter(currentResource.type);
+        modalDate.textContent = currentResource.date;
+        
+        // Clear previous guide content
+        modalGuide.innerHTML = '';
+        
+        // Add additional details for schemes
+        if (currentResource.type === 'schemes') {
+          let schemeDetails = '<div style="margin-top: 15px; padding: 15px; background: #f0f9f4; border-radius: 8px;">';
+          schemeDetails += '<h4 style="margin-bottom: 10px; color: #0e7a5a;">Scheme Details:</h4>';
+          
+          if (currentResource.eligibility) {
+            schemeDetails += `<p><strong>Eligibility:</strong> ${currentResource.eligibility}</p>`;
+          }
+          
+          if (currentResource.benefits) {
+            schemeDetails += `<p><strong>Benefits:</strong> ${currentResource.benefits}</p>`;
+          }
+          
+          schemeDetails += `<p style="margin-top: 10px;"><a href="${currentResource.link}" target="_blank" style="color: #0e7a5a; text-decoration: underline;">Official Website & Application Details</a></p>`;
+          schemeDetails += '</div>';
+          
+          modalGuide.innerHTML = schemeDetails;
+        }
+        
+        // Show modal
+        resourceModal.style.display = 'flex';
+      }
+    }
+
+    // Helper function to get icon for resource type
+    function getIconForType(type) {
+      switch(type) {
+        case 'books': return 'book';
+        case 'videos': return 'play-circle';
+        case 'research': return 'file-pdf';
+        case 'schemes': return 'file-invoice-dollar';
+        default: return 'file-alt';
+      }
+    }
+
+    // Helper function to capitalize first letter
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    // Initialize the page when loaded
+    document.addEventListener('DOMContentLoaded', initPage);
+  </script>
+  
+  <script>
+    function showAllResources(type) {
+      let content = "<ul style='list-style-type: none; padding: 0;'>";
+      let count = 0;
+      
+      for (const [title, data] of Object.entries(resourceData)) {
+        if (type === data.type) {
+          count++;
+          content += `
+            <li style="margin-bottom: 15px; padding: 10px; background: #f8fbf9; border-radius: 8px;">
+              <strong><a href="${data.link}" target="_blank" style="color: #0e7a5a; text-decoration: none;">${title}</a></strong>
+              <p style="margin: 5px 0; color: #486a5b;">${data.description}</p>
+              ${data.eligibility ? `<p style="margin: 3px 0; font-size: 0.9em;"><strong>Eligibility:</strong> ${data.eligibility}</p>` : ''}
+              ${data.benefits ? `<p style="margin: 3px 0; font-size: 0.9em;"><strong>Benefits:</strong> ${data.benefits}</p>` : ''}
+            </li>
+          `;
+        }
+      }
+      
+      content += "</ul>";
+      
+      if (count === 0) {
+        content = "<p>No resources found in this category.</p>";
+      }
+
+      modalTitle.innerHTML = `<i class="fas fa-${getIconForType(type)}"></i> All ${type.charAt(0).toUpperCase() + type.slice(1)} Resources`;
+      modalDescription.innerHTML = content;
+      modalType.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+      modalDate.textContent = "Multiple Resources";
+      modalGuide.innerHTML = "";
+      
+      resourceModal.style.display = 'flex';
+    }
+  </script>
+
+  <script>window.gtranslateSettings = {"default_language":"en","languages":["en","mr","hi"],"wrapper_selector":".gtranslate_wrapper"}</script>
+  <script src="https://cdn.gtranslate.net/widgets/latest/ln.js" defer></script>
+</body>
+</html>

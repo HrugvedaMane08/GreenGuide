@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - The Green Guide</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+    body {
+      display: flex;
+      min-height: 100vh;
+      background: #f4f7f5;
+      color: #1c2b24;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: #0e3b2e;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      color: #a5e1c9;
+    }
+    .menu a {
+      display: block;
+      padding: 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #fff;
+      margin: 6px 0;
+      transition: 0.25s;
+    }
+    .menu a:hover,
+    .menu a.active {
+      background: #1c5e47;
+    }
+    .sidebar .bottom {
+      margin-top: auto;
+      padding-top: 16px;
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .topbar h2 {
+      font-size: 1.4rem;
+    }
+
+    /* GTranslate styling (if needed) */
+    .gtranslate_wrapper {
+      order: 2;
+      
+    }
+    .gtranslate_wrapper select {
+      padding: 10px 20px 10px 15px;
+      border-radius: 999px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      background-color: #0e7a5a;
+      color: white;
+      cursor: pointer;
+      height: 40px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+
+    /* User profile styling */
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      margin-left: 20px;
+      order: 3;
+    }
+    .user img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    /* Containers */
+    .container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1.1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    /* Hero section */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(160deg, #0e7a5a 0%, #0f5132 60%);
+      color: #fff;
+      border-radius: 20px;
+      padding: 26px 26px 20px 26px;
+      box-shadow: 0 10px 30px rgba(6, 73, 55, 0.25);
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: center;
+    }
+    .hero h1 {
+      font-size: 1.8rem;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .hero p {
+      opacity: 0.9;
+      margin-bottom: 14px;
+    }
+    .hero img {
+      width: 100%;
+      max-width: 360px;
+      justify-self: end;
+      filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.2));
+      transform: translateY(4px);
+    }
+    .wave {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 32px;
+      background: radial-gradient(120% 60% at 50% 0, #0f5132 60%, transparent 61%);
+    }
+
+    /* Community and info styles */
+    .community {
+      background: linear-gradient(160deg, #e7fff3, #d6f5ea);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 6px 18px rgba(20, 48, 38, 0.06);
+    }
+    .community h4 {
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+    .community p {
+      color: #245847;
+    }
+    .btn {
+      margin-top: 10px;
+      display: inline-block;
+      background: #0e7a5a;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Mini cards */
+    .mini {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .mini .m {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(20, 48, 38, 0.06);
+    }
+    .mini .m img {
+      width: 28px;
+      height: 28px;
+      margin-bottom: 6px;
+    }
+
+    /* Farming info */
+    .farming-info {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 6px 18px rgba(20, 48, 38, 0.06);
+      margin-top: 18px;
+    }
+    .farming-info h3 {
+      color: #0e7a5a;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .info-card {
+      background: #f8fdf9;
+      border-left: 4px solid #0e7a5a;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .info-card h4 {
+      color: #0e7a5a;
+      margin-bottom: 10px;
+    }
+    .info-card p {
+      color: #486a5b;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .quote-card {
+      background: #f0f7f3;
+      padding: 15px;
+      border-radius: 8px;
+      font-style: italic;
+      color: #245847;
+      border-left: 4px solid #a5e1c9;
+    }
+    .quote-author {
+      text-align: right;
+      margin-top: 10px;
+      font-weight: 600;
+      color: #0e7a5a;
+    }
+
+    /* Agriculture Image */
+    .agri-image {
+      background: linear-gradient(160deg, #e7fff3, #d6f5ea);
+      border-radius: 16px;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(20, 48, 38, 0.06);
+      height: 200px;
+    }
+    .agri-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .hero {
+        grid-template-columns: 1fr;
+      }
+      .hero img {
+        display: none;
+      }
+    }
+    @media (max-width: 720px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Modal styles */
+    #editProfileModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #editProfileModal div {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      width: 320px;
+      position: relative;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.3s ease;
+    }
+    #editProfileModal h3 {
+      margin-bottom: 15px;
+      text-align: center;
+      color: #0e7a5a;
+      font-family: sans-serif;
+    }
+    #editProfileModal label {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 5px;
+      display: block;
+    }
+    #editProfileModal input {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      transition: 0.3s;
+    }
+    #editProfileModal input:focus {
+      border-color: #0e7a5a;
+      box-shadow: 0 0 5px rgba(14, 122, 90, 0.4);
+    }
+    #saveProfileBtn {
+      width: 100%;
+      padding: 12px;
+      background: #0e7a5a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    #saveProfileBtn:hover {
+      background: #0b5f46;
+    }
+    #cancelProfileBtn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 8px;
+      background: #e0e0e0;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    #cancelProfileBtn:hover {
+      background: #d6d6d6;
+    }
+    @keyframes fadeIn {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">🌱 Green Guide</div>
+    <div class="menu">
+      <a href="#" class="active">Dashboard</a>
+      <a href="/crop-selection">🌾 Crop Selection</a>
+      <a href="/weather">☀️ Weather Forecast</a>
+      <a href="/library">📚 Reference Library</a>
+      <a href="/calendar">📅 Crop Calendar</a>
+      <a href="/know-crops">🌱 Know About Crops</a>
+      <a href="/loan-assistant">💰 Loan Assistant</a>
+      <a href="/ask-question">🗣️ Ask a Question</a>
+    </div>
+    <div class="bottom">
+      <a href="login.html" onclick="logout()" style="color: #fff; text-decoration: none;">Log Out</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h2>Dashboard</h2>
+      <div style="display:flex; align-items:center;">
+        <div class="gtranslate_wrapper"></div>
+        <div class="user">
+          <span id="userNameDisplay"></span>
+          <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="user" />
+        </div>
+      </div>
+    </div>
+
+    <div id="profileDropdown" style="position:absolute; top:70px; right:24px; width:250px; background:#fff; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.15); padding:16px; display:none; z-index:50;">
+      <h4 id="profileName">Username</h4>
+      <p id="profileEmail">Email: user@example.com</p>
+      <button id="editProfileBtn" class="btn" style="width:100%; margin-top:10px; padding:8px 0;">Edit Profile</button>
+    </div>
+
+    <div class="container">
+      <section class="hero">
+        <div>
+          <h1>We bring smart farming tools to your dashboard</h1>
+          <p>Get crop recommendations, weather insights, schedules and a curated library — all in one place.</p>
+        </div>
+        <img alt="Fresh produce" src="https://i.pinimg.com/1200x/da/4c/c8/da4cc84e4aba23138da71ae896b78b29.jpg" />
+        <div class="wave"></div>
+      </section>
+
+      <section class="grid">
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div class="farming-info">
+            <h3>Farming Insights & Wisdom</h3>
+            <div class="info-grid">
+              <div class="info-card">
+                <h4>Soil Health Tip</h4>
+                <p>Healthy soil is the foundation of successful farming. Regularly test your soil and amend it with organic matter to maintain fertility and structure.</p>
+              </div>
+              <div class="info-card">
+                <h4>Water Conservation</h4>
+                <p>Implement drip irrigation systems to reduce water usage by up to 60% compared to traditional methods while improving crop yields.</p>
+              </div>
+              <div class="quote-card">
+                <p>"The ultimate goal of farming is not the growing of crops, but the cultivation and perfection of human beings."</p>
+                <div class="quote-author">- Masanobu Fukuoka</div>
+              </div>
+              <div class="quote-card">
+                <p>"Farming looks mighty easy when your plow is a pencil and you're a thousand miles from the corn field."</p>
+                <div class="quote-author">- Dwight D. Eisenhower</div>
+              </div>
+              <div class="info-card">
+                <h4>Crop Rotation Benefits</h4>
+                <p>Rotating crops helps prevent soil depletion, reduces pest and disease problems, and can improve soil structure and fertility.</p>
+              </div>
+              <div class="info-card">
+                <h4>Organic Farming</h4>
+                <p>Organic farming practices focus on soil health, biodiversity, and ecological balance, avoiding synthetic pesticides and fertilizers.</p>
+              </div>
+              <div class="quote-card">
+                <p>"Agriculture is our wisest pursuit, because it will in the end contribute most to real wealth, good morals, and happiness."</p>
+                <div class="quote-author">- Thomas Jefferson</div>
+              </div>
+              <div class="quote-card">
+                <p>"The farmer is the only man in our economy who buys everything at retail, sells everything at wholesale, and pays the freight both ways."</p>
+                <div class="quote-author">- John F. Kennedy</div>
+              </div>
+              <div class="quote-card">
+                <p>"Farming is a profession of hope, connected with the earth and its seasons."</p>
+                <div class="quote-author">- Brian Brett</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div class="agri-image">
+            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Agriculture landscape" />
+          </div>
+          <div class="community">
+            <h4>Basic Information about Agriculture</h4>
+            <p>Agriculture is the practice of cultivating plants and livestock. Farming of domesticated species created food surpluses that enabled people to live in cities.</p>
+          </div>
+          <div class="community">
+            <h4>Seasonal Tip</h4>
+            <p>Spring is the perfect time for soil preparation. Test your soil pH and nutrient levels before planting to ensure optimal growing conditions.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="editProfileModal">
+    <div>
+      <h3>Edit Profile</h3>
+      <label for="editUsername">Username</label>
+      <input type="text" id="editUsername" />
+      <label for="editEmail">Email</label>
+      <input type="email" id="editEmail" />
+      <button id="saveProfileBtn">Save</button>
+      <button id="cancelProfileBtn">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:5000/api";
+
+    function logout() {
+      sessionStorage.clear();
+      window.location.replace("login.html");
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedUserName = sessionStorage.getItem("userName");
+      const savedUserId = sessionStorage.getItem("userId");
+      const savedEmail = sessionStorage.getItem("email");
+
+      if (savedUserName && savedUserName.trim() !== "") {
+        document.getElementById("userNameDisplay").textContent = savedUserName;
+      } else {
+        window.location.replace("login.html");
+        return;
+      }
+
+      document.querySelector('.sidebar .bottom a').onclick = logout;
+
+      const profileIcon = document.querySelector('.user img');
+      const profileDropdown = document.getElementById('profileDropdown');
+
+      function populateProfileDropdown() {
+        document.getElementById("profileName").textContent = savedUserName || "User";
+        document.getElementById("profileEmail").textContent = savedEmail ? `Email: ${savedEmail}` : "Email: N/A";
+      }
+
+      profileIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+        if (profileDropdown.style.display === 'block') populateProfileDropdown();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!profileDropdown.contains(e.target) && !profileIcon.contains(e.target)) {
+          profileDropdown.style.display = 'none';
+        }
+      });
+
+      const editProfileBtn = document.getElementById('editProfileBtn');
+      const editProfileModal = document.getElementById('editProfileModal');
+      const cancelProfileBtn = document.getElementById('cancelProfileBtn');
+      const saveProfileBtn = document.getElementById('saveProfileBtn');
+
+      editProfileBtn.addEventListener('click', () => {
+        document.getElementById("editUsername").value = savedUserName || "";
+        document.getElementById("editEmail").value = savedEmail || "";
+        profileDropdown.style.display = 'none';
+        editProfileModal.style.display = "flex";
+      });
+
+      cancelProfileBtn.addEventListener('click', () => {
+        editProfileModal.style.display = "none";
+      });
+
+      saveProfileBtn.addEventListener('click', async () => {
+        const newUsername = document.getElementById("editUsername").value.trim();
+        const newEmail = document.getElementById("editEmail").value.trim();
+        const userId = savedUserId;
+
+        if (!userId) {
+          alert("Error: User ID not found. Please log in again.");
+          return;
+        }
+        if (!newUsername || !newEmail) {
+          alert("Both fields are required.");
+          return;
+        }
+        try {
+          const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: newUsername, email: newEmail })
+          });
+          const data = await res.json();
+          if(data.success){
+            alert("Profile updated successfully!");
+            sessionStorage.setItem("userName", newUsername);
+            sessionStorage.setItem("email", newEmail);
+            document.getElementById("userNameDisplay").textContent = newUsername;
+            editProfileModal.style.display = "none";
+            populateProfileDropdown();
+          } else {
+            alert("Error updating profile: " + data.error);
+          }
+        } catch(err) {
+          console.error("API Update Error:", err);
+          alert("A network error occurred. Could not connect to the server.");
+        }
+      });
+
+      editProfileModal.addEventListener('click', (e) => {
+        if (e.target === editProfileModal) {
+          editProfileModal.style.display = "none";
+        }
+      });
+    });
+  </script>
+
+  <script>
+    window.gtranslateSettings = {
+      "default_language": "en",
+      "languages": ["en", "mr", "hi"],
+      "wrapper_selector": ".gtranslate_wrapper"
+    };
+  </script>
+  <script src="https://cdn.gtranslate.net/widgets/latest/ln.js" defer></script>
+</body>
+</html>

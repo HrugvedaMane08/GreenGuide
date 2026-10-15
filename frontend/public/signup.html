@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Signup - The Green Guide</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI", Arial, sans-serif; }
+    body {
+      min-height: 100vh; background: #1b3b2f;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .container {
+      background: white; width: 90%; max-width: 900px;
+      display: flex; border-radius: 25px; overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    /* Left side */
+    .illustration { flex: 1; background: #e9f3ec;
+      display: flex; justify-content: center; align-items: center; padding: 30px;
+    }
+    .illustration img { width: 100%; max-width: 350px; }
+    /* Right side */
+    .signup-box {
+      flex: 1; background: #214734; color: white;
+      padding: 50px 40px; display: flex; flex-direction: column; justify-content: center;
+    }
+    .signup-box h2 { margin-bottom: 30px; font-size: 2rem; font-weight: 600; }
+    .form-group { margin-bottom: 20px; }
+    label { display:block; font-size:0.9rem; margin-bottom:6px; color:#cde0d4; }
+    input {
+      width:100%; padding:12px; border:none; border-radius:25px;
+      font-size:1rem; background:#2d5a46; color:white; outline:none;
+    }
+    input::placeholder { color:#aac6b7; }
+    input:focus { box-shadow:0 0 0 2px #6bcf9d; }
+    .btn {
+      width:100%; padding:12px; font-size:1rem; font-weight:bold;
+      border:none; border-radius:25px; background:#8fd0b4; color:#1b3b2f;
+      cursor:pointer; transition:0.3s;
+    }
+    .btn:hover { background:#a5e1c9; }
+    .login-link { text-align:center; margin-top:20px; font-size:0.9rem; color:#b9dfca; }
+    .login-link a { color:#9dd6ba; text-decoration:none; font-weight:bold; }
+    .login-link a:hover { text-decoration:underline; }
+
+    /* Password strength message */
+    #password-strength {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    .weak { color: #ff4d4d; }
+    .medium { color: #ffcc00; }
+    .strong { color: #4dff88; }
+
+    #error-message {
+      color: #ff4d4d;
+      margin-top: 10px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .container { flex-direction:column; }
+      .illustration { padding:20px; }
+      .signup-box { padding:30px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="illustration">
+      <img src="https://i.pinimg.com/1200x/95/76/a4/9576a4ea2172b65c7e4d542526fda95c.jpg" alt="Signup Illustration">
+    </div>
+    <div class="signup-box">
+      <h2>Create Account</h2>
+      <form onsubmit="signup(event)">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Choose a username" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="location">City/Location (for Weather Alerts)</label>
+          <input type="text" id="location" placeholder="e.g., Mumbai or New York" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Create a password" required>
+          <div id="password-strength"></div>
+        </div>
+        <button type="submit" class="btn">Sign Up</button>
+      </form>
+      <div id="error-message"></div>
+      <div class="login-link">
+        Already have an account? <a href="login.html">Login Here</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const passwordInput = document.getElementById("password");
+    const strengthMsg = document.getElementById("password-strength");
+    const errorMessage = document.getElementById("error-message");
+
+    // live password strength checker
+    passwordInput.addEventListener("input", function () {
+      const password = passwordInput.value;
+      let strength = "";
+      let className = "";
+
+      if (password.length < 6) {
+        strength = "Weak (too short)";
+        className = "weak";
+      } else {
+        const hasLower = /[a-z]/.test(password);
+        const hasUpper = /[A-Z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSpecial = /[@$!%*?&]/.test(password);
+
+        const passedChecks = [hasLower, hasUpper, hasNumber, hasSpecial].filter(Boolean).length;
+
+        if (passedChecks <= 2) {
+          strength = "Weak";
+          className = "weak";
+        } else if (passedChecks === 3) {
+          strength = "Medium";
+          className = "medium";
+        } else if (passedChecks === 4 && password.length >= 8) {
+          strength = "Strong";
+          className = "strong";
+        } else {
+          strength = "Medium";
+          className = "medium";
+        }
+      }
+
+      strengthMsg.textContent = strength;
+      strengthMsg.className = className;
+    });
+
+    async function signup(event) {
+      event.preventDefault();
+      errorMessage.textContent = ""; // Clear previous errors
+
+      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      const location = document.getElementById("location").value;
+      const password = document.getElementById("password").value;
+
+      // Final password validation before submit
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegex.test(password)) {
+        errorMessage.textContent = "Password must be at least 8 characters long, include one uppercase, one lowercase, one number, and one special character.";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: username,
+            email: email,
+            location: location,
+            password: password
+          })
+        });
+
+        if (response.ok) {
+          alert("Signup successful! You can now log in.");
+          window.location.href = "login.html";
+        } else {
+          const errorData = await response.json();
+          const errorMsg = errorData.error || "Signup failed! Maybe email already exists.";
+          errorMessage.textContent = errorMsg;
+        }
+      } catch (err) {
+        console.error("Error:", err);
+        errorMessage.textContent = "Server error. Please check the console and try again later.";
+      }
+    }
+  </script>
+</body>
+</html>

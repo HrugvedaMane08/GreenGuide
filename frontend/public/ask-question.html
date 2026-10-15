@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ask a Question - The Green Guide</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI", Arial, sans-serif; }
+    body { display:flex; min-height:100vh; background:#f4f7f5; color:#1c2b24; }
+
+    /* Sidebar — matches dashboard.html / loan-assistant.html exactly */
+    .sidebar { width:250px; background:#0e3b2e; color:#fff; display:flex; flex-direction:column; padding:20px; flex-shrink:0; }
+    .logo { font-size:1.5rem; font-weight:700; margin-bottom:40px; color:#a5e1c9; }
+    .menu a { display:block; padding:12px; border-radius:12px; text-decoration:none; color:#fff; margin:6px 0; transition:0.25s; }
+    .menu a:hover, .menu a.active { background:#1c5e47; }
+    .sidebar .bottom { margin-top:auto; padding-top:16px; }
+
+    /* Main */
+    .main { flex:1; padding:28px 32px 60px; max-width:820px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+    .topbar h1 { font-size:1.6rem; color:#0e3b2e; }
+    .farmer-chip {
+      display:flex; align-items:center; gap:8px; background:#fff; border:1px solid #dcece3;
+      border-radius:999px; padding:6px 14px 6px 8px; font-size:0.85rem; color:#3f544a; cursor:pointer;
+    }
+    .farmer-chip .dot { width:8px; height:8px; border-radius:50%; background:#0e7a5a; }
+    .subtitle { color:#5a7268; margin-bottom:26px; font-size:0.95rem; max-width:560px; }
+
+    .card {
+      background:#fff; border:1px solid #eef3f0; border-radius:16px; padding:20px 22px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.04);
+    }
+
+    .ask-row { display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap; }
+    .ask-lang-select {
+      width:auto; min-width:180px; padding:10px 10px; border:1px solid #d5e0da; border-radius:10px;
+      font-size:0.85rem; background:#fbfdfc; outline:none;
+    }
+    .ask-lang-select:focus { border-color:#0e7a5a; box-shadow:0 0 0 2px rgba(14,122,90,0.15); }
+    .ask-row textarea {
+      flex:1; min-width:220px; resize:vertical; min-height:44px; max-height:160px;
+      padding:10px 12px; border:1px solid #d5e0da; border-radius:10px; font-size:0.92rem;
+      outline:none; background:#fbfdfc; font-family:inherit;
+    }
+    .ask-row textarea:focus { border-color:#0e7a5a; box-shadow:0 0 0 2px rgba(14,122,90,0.15); }
+
+    .btn {
+      padding:10px 22px; border:none; border-radius:24px; background:#0e7a5a; color:#fff;
+      font-weight:600; cursor:pointer; font-size:0.92rem; transition:0.2s;
+    }
+    .btn:hover { background:#0c6b4e; }
+    .btn:disabled { opacity:0.55; cursor:not-allowed; }
+
+    .ask-answer {
+      margin-top:14px; background:#f8fdf9; border:1px solid #dcece3; border-left:4px solid #0e7a5a;
+      border-radius:12px; padding:16px 18px;
+    }
+    .ask-answer .q { font-size:0.82rem; color:#8aa198; margin-bottom:8px; }
+    .ask-answer .q .orig { font-style:italic; }
+    .ask-answer .a { font-size:0.92rem; color:#1c2b24; line-height:1.6; white-space:pre-line; }
+    .ask-answer .a-en { font-size:0.8rem; color:#8aa198; margin-top:10px; padding-top:10px; border-top:1px dashed #e4ece7; }
+    .ask-sources { margin-top:10px; display:flex; gap:6px; flex-wrap:wrap; }
+    .ask-source-chip {
+      font-size:0.72rem; color:#0e7a5a; background:#e9f7ef; border:1px solid #dcece3;
+      border-radius:999px; padding:3px 10px;
+    }
+    .ask-empty { color:#8aa198; font-size:0.85rem; padding:6px 0; }
+
+    /* Voice input.
+       The mic is the primary control for farmers who cannot read: it is the
+       largest, highest-contrast target on the card, and the glyph carries the
+       meaning on its own. The word "Speak" is a label for readers, not the
+       thing being relied on. */
+    .btn-mic {
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+      min-width:92px; min-height:92px; padding:10px 14px;
+      border:2px solid #0e7a5a; border-radius:50%; background:#0e7a5a;
+      color:#fff; font-weight:600; cursor:pointer; font-size:0.78rem; transition:0.2s;
+      box-shadow:0 2px 8px rgba(14,122,90,0.25); flex-shrink:0;
+    }
+    .btn-mic .mic-glyph { font-size:1.9rem; line-height:1; }
+    .btn-mic:hover { background:#0c6b4e; border-color:#0c6b4e; }
+    .btn-mic:focus-visible { outline:3px solid #a5e1c9; outline-offset:2px; }
+    .btn-mic:disabled { opacity:0.55; cursor:not-allowed; }
+    .btn-mic.recording {
+      background:#c8362b; border-color:#c8362b; color:#fff;
+      animation:mic-pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes mic-pulse { 50% { box-shadow:0 0 0 10px rgba(200,54,43,0.18); } }
+    .mic-hint { font-size:0.78rem; color:#8aa198; margin-top:8px; }
+
+    .ask-answer .transcript { font-size:0.82rem; color:#5a7268; margin-bottom:8px; }
+    .ask-answer .transcript strong { color:#0e7a5a; }
+    .btn-speak {
+      margin-top:10px; padding:5px 12px; border:1px solid #dcece3; border-radius:999px;
+      background:#fff; color:#0e7a5a; font-size:0.75rem; cursor:pointer; transition:0.2s;
+    }
+    .btn-speak:hover { background:#e9f7ef; }
+    .speak-note { margin-top:6px; font-size:0.72rem; color:#8a6d3b; }
+    .ask-loading-line { font-size:0.87rem; color:#5a7268; display:flex; align-items:center; gap:8px; padding:10px 0; }
+    .ask-spinner { width:14px; height:14px; border:2px solid #dcece3; border-top-color:#0e7a5a; border-radius:50%; animation:ask-spin 0.7s linear infinite; }
+    @keyframes ask-spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">🌱 Green Guide</div>
+    <div class="menu">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/crop-selection">🌾 Crop Selection</a>
+      <a href="/weather">☀️ Weather Forecast</a>
+      <a href="/library">📚 Reference Library</a>
+      <a href="/calendar">📅 Crop Calendar</a>
+      <a href="/know-crops">🌱 Know About Crops</a>
+      <a href="/loan-assistant">💰 Loan Assistant</a>
+      <a href="/ask-question" class="active">🗣️ Ask a Question</a>
+    </div>
+    <div class="bottom">
+      <a href="login.html" id="logoutLink" style="color:#fff; text-decoration:none;">Log Out</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1>Ask a Question</h1>
+      <div class="farmer-chip" id="farmerChip" title="The account you are logged in as">
+        <span class="dot"></span>
+        <span id="farmerChipLabel"></span>
+      </div>
+    </div>
+    <p class="subtitle">Ask in English, Hindi, or Marathi. Answers are grounded in scheme documents from the Loan Assistant.</p>
+
+    <div class="card">
+      <div class="ask-row">
+        <select class="ask-lang-select" id="askLangSelect">
+          <option value="auto">Auto-detect language</option>
+        </select>
+        <button class="btn link" type="button" id="newTopicBtn" title="Forget what was said so far, so the next question stands on its own">New topic</button>
+      </div>
+      <div class="ask-row" style="margin-top:10px;">
+        <textarea id="askInput" placeholder="e.g. मुझे सिंचाई के लिए कौन सी योजना मिल सकती है?"></textarea>
+        <button class="btn-mic" id="micBtn" title="Ask by speaking" aria-label="Ask your question by speaking"><span class="mic-glyph" aria-hidden="true">🎤</span><span class="mic-label">Speak</span></button>
+        <button class="btn" id="askSubmit" style="margin-top:0;">Ask</button>
+      </div>
+      <div class="mic-hint" id="micHint"></div>
+      <div id="askArea"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:5000/api";
+
+    // Who is asking: the logged-in account, and nothing else. This used to fall back to the user's
+    // NAME or to a shared "farmer1", and let anyone type any farmer id, so records piled up under
+    // accounts that do not exist. With nobody logged in the page goes to the login screen.
+    const farmerId = sessionStorage.getItem("userId");
+    if (!farmerId) {
+      window.location.replace("login.html");
+      throw new Error("Not logged in"); // stops the rest of this script from running
+    }
+    document.getElementById("farmerChipLabel").textContent = sessionStorage.getItem("userName") || "Logged in";
+
+    // The server answers 401 when the account is missing or unknown (e.g. deleted): start over at login.
+    const nativeFetch = window.fetch.bind(window);
+    window.fetch = async (...args) => {
+      const response = await nativeFetch(...args);
+      if (response.status === 401 && String(args[0]).startsWith(API_BASE)) {
+        sessionStorage.clear();
+        alert("Please log in again to continue.");
+        window.location.href = "login.html";
+      }
+      return response;
+    };
+
+    document.getElementById("logoutLink").addEventListener("click", () => sessionStorage.clear());
+
+    // A conversation id, so a follow-up ("and the documents?") is understood in context. It lives
+    // for this browser tab; "New topic" starts a fresh one and asks the server to forget the old.
+    const newSessionId = () => "s" + Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+    let sessionId;
+    try { sessionId = sessionStorage.getItem("gg_session") || newSessionId(); sessionStorage.setItem("gg_session", sessionId); }
+    catch (e) { sessionId = newSessionId(); }
+
+    const askLangSelect = document.getElementById("askLangSelect");
+    const askInput = document.getElementById("askInput");
+    const askSubmit = document.getElementById("askSubmit");
+    const askArea = document.getElementById("askArea");
+
+    async function loadLanguages() {
+      try {
+        const res = await fetch(`${API_BASE}/farmers/languages`);
+        const data = await res.json();
+        if (!res.ok) return;
+        Object.entries(data).forEach(([code, name]) => {
+          if (code === "auto") return; // already in the select as default
+          const opt = document.createElement("option");
+          opt.value = code;
+          opt.textContent = name;
+          askLangSelect.appendChild(opt);
+        });
+      } catch (err) {
+        // Non-fatal — auto-detect still works without a populated dropdown.
+      }
+    }
+
+    // Answers are model-generated and questions come from the farmer, so both
+    // are escaped rather than interpolated as HTML.
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) => (
+        { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+      ));
+    }
+
+    // Declared above renderAskAnswer: it is read during the auto-speak path,
+    // and a const is in the temporal dead zone until its line executes.
+    const supportsSpeech = typeof window.speechSynthesis !== "undefined";
+
+    function renderAskAnswer(data, { autoSpeak = false } = {}) {
+      const sourcesHtml = (data.sources || []).length
+        ? `<div class="ask-sources">${data.sources.map((s) => `<span class="ask-source-chip">${esc(s)}</span>`).join("")}</div>`
+        : "";
+
+      // Shown when the question was spoken, so a mis-heard word is visible as a
+      // transcription problem rather than looking like a bad answer.
+      const transcriptHtml = data.transcript
+        ? `<div class="transcript">🎤 Heard: <strong>"${esc(data.transcript)}"</strong></div>`
+        : "";
+
+      const translatedQHtml = data.translatedQuestion
+        ? `<div class="q">Detected: <strong>${esc(data.detectedLanguageName)}</strong> · translated question: <span class="orig">"${esc(data.translatedQuestion)}"</span></div>`
+        : `<div class="q">Detected: <strong>${esc(data.detectedLanguageName)}</strong></div>`;
+
+      const englishAnswerHtml = data.answerEnglish
+        ? `<div class="a-en">English: ${esc(data.answerEnglish)}</div>`
+        : "";
+
+      const speakHtml = supportsSpeech
+        ? `<button class="btn-speak" data-speak="${esc(data.answer)}" data-lang="${esc(data.detectedLanguageCode || "en")}" data-speak-en="${esc(data.answerEnglish || "")}" data-lang-name="${esc(data.detectedLanguageName || "")}">🔊 Listen to answer</button>`
+        : "";
+
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = `
+        <div class="ask-answer">
+          ${transcriptHtml}
+          ${translatedQHtml}
+          <div class="a">${esc(data.answer)}</div>
+          ${englishAnswerHtml}
+          ${sourcesHtml}
+          ${speakHtml}
+        </div>
+      `;
+      const answerEl = wrapper.firstElementChild;
+      askArea.prepend(answerEl);
+
+      // A farmer who asked out loud may not be able to read the reply, so speak
+      // it without waiting to be asked. Browsers only allow this because the
+      // recording tap counts as the user gesture that unlocks audio.
+      if (autoSpeak && supportsSpeech) {
+        speakAnswer(answerEl.querySelector("[data-speak]"));
+      }
+    }
+
+    /* ---------- Voice output (browser TTS) ---------- */
+    // Groq offers no TTS model on this account, and Indian-language TTS APIs are
+    // a paid vendor decision — the browser's built-in synthesis is free and
+    // covers hi/mr/ta on most devices. Degrades to no button where unsupported.
+
+    const SPEAK_LABEL = "🔊 Listen to answer";
+    const STOP_LABEL = "⏹ Stop";
+
+    // Chrome (and some mobile browsers) populate getVoices() asynchronously and
+    // return [] on the first call. Speaking before the list arrives silently
+    // reads Marathi/Hindi with an English voice, which is close to unusable.
+    // Resolve once voices exist, with a timeout so we still speak (in the
+    // default voice) on engines that never fire the event.
+    function voicesReady() {
+      if (!supportsSpeech) return Promise.resolve([]);
+      const existing = window.speechSynthesis.getVoices();
+      if (existing.length) return Promise.resolve(existing);
+
+      return new Promise((resolve) => {
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          resolve(window.speechSynthesis.getVoices());
+        };
+        window.speechSynthesis.addEventListener("voiceschanged", finish, { once: true });
+        setTimeout(finish, 1500);
+      });
+    }
+
+    // Prefer an exact language match, then any voice for the same base language
+    // ("mr-IN" for "mr"), so a device with only a generic Marathi voice still
+    // pronounces the answer correctly.
+    function pickVoice(voices, lang) {
+      const want = String(lang || "en").toLowerCase();
+      const base = want.split("-")[0];
+      const norm = (v) => v.lang.toLowerCase().replace("_", "-");
+      return (
+        voices.find((v) => norm(v) === want) ||
+        // Prefer an Indian variant of the language before any other region:
+        // en-IN (Heera/Ravi on Windows) is far easier for an Indian farmer to
+        // follow than en-US, and the same holds for any other base language.
+        voices.find((v) => norm(v) === `${base}-in`) ||
+        voices.find((v) => norm(v).startsWith(base)) ||
+        null
+      );
+    }
+
+    // Explains why the spoken language differs from the written one, so a
+    // missing voice pack reads as a device limitation rather than a bug.
+    function setSpeakNote(btn, message) {
+      const holder = btn.closest(".ask-answer");
+      if (!holder || holder.querySelector(".speak-note")) return;
+      const note = document.createElement("div");
+      note.className = "speak-note";
+      note.textContent = message;
+      btn.insertAdjacentElement("afterend", note);
+    }
+
+    function stopSpeaking() {
+      if (!supportsSpeech) return;
+      window.speechSynthesis.cancel();
+      askArea.querySelectorAll("[data-speak]").forEach((b) => { b.textContent = SPEAK_LABEL; });
+    }
+
+    /* ---------- Numbers in spoken Hindi ---------- */
+    // A Hindi voice reads Latin digits ("6,000", "₹100,000") in English, mid-sentence.
+    // Hindi number words are irregular below 100 (no tens + units rule), so they come
+    // from a table. Only the spoken text is changed; the answer on screen is not.
+    const HI_0_99 = ("शून्य एक दो तीन चार पाँच छह सात आठ नौ दस ग्यारह बारह तेरह चौदह पंद्रह सोलह सत्रह अठारह उन्नीस " +
+      "बीस इक्कीस बाईस तेईस चौबीस पच्चीस छब्बीस सत्ताईस अट्ठाईस उनतीस तीस इकतीस बत्तीस तैंतीस चौंतीस पैंतीस छत्तीस सैंतीस अड़तीस उनतालीस " +
+      "चालीस इकतालीस बयालीस तैंतालीस चौवालीस पैंतालीस छियालीस सैंतालीस अड़तालीस उनचास पचास इक्यावन बावन तिरपन चौवन पचपन छप्पन सत्तावन अट्ठावन उनसठ " +
+      "साठ इकसठ बासठ तिरसठ चौंसठ पैंसठ छियासठ सड़सठ अड़सठ उनहत्तर सत्तर इकहत्तर बहत्तर तिहत्तर चौहत्तर पचहत्तर छिहत्तर सतहत्तर अठहत्तर उनासी " +
+      "अस्सी इक्यासी बयासी तिरासी चौरासी पचासी छियासी सत्तासी अट्ठासी नवासी नब्बे इक्यानवे बानवे तिरानवे चौरानवे पंचानवे छियानवे सत्तानवे अट्ठानवे निन्यानवे").split(" ");
+
+    // Indian grouping: करोड़ (10^7), लाख (10^5), हज़ार, सौ.
+    function hindiWholeNumber(n) {
+      if (n < 100) return HI_0_99[n];
+      const units = [[1e7, "करोड़"], [1e5, "लाख"], [1e3, "हज़ार"], [100, "सौ"]];
+      for (const [size, word] of units) {
+        if (n >= size) {
+          const rest = n % size;
+          return `${hindiWholeNumber(Math.floor(n / size))} ${word}${rest ? " " + hindiWholeNumber(rest) : ""}`;
+        }
+      }
+    }
+
+    function hindiNumberWords(raw) {
+      const [whole, fraction] = raw.replace(/,/g, "").split(".");
+      // Very long digit strings (ids, phone numbers) are read digit by digit, not as a quantity.
+      const wholeWords = whole.length > 9 ? [...whole].map((d) => HI_0_99[+d]).join(" ") : hindiWholeNumber(Number(whole));
+      return fraction ? `${wholeWords} दशमलव ${[...fraction].map((d) => HI_0_99[+d]).join(" ")}` : wholeWords;
+    }
+
+    function hindiSpokenText(text) {
+      const DEVANAGARI_DIGITS = "०१२३४५६७८९";
+      return text
+        .replace(/[०-९]/g, (d) => DEVANAGARI_DIGITS.indexOf(d))
+        .replace(/(?:₹|Rs\.?|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)/gi, (_, n) => `${hindiNumberWords(n)} रुपये`)
+        .replace(/(\d+(?:,\d+)*(?:\.\d+)?)\s*%/g, (_, n) => `${hindiNumberWords(n)} प्रतिशत`)
+        .replace(/\d+(?:,\d+)*(?:\.\d+)?/g, (n) => hindiNumberWords(n));
+    }
+
+    async function speakAnswer(btn) {
+      if (!supportsSpeech || !btn) return;
+
+      const text = btn.dataset.speak;
+      if (!text) return;
+
+      stopSpeaking();
+
+      const voices = await voicesReady();
+      const lang = btn.dataset.lang || "en";
+      let voice = pickVoice(voices, lang);
+
+      // Many Windows installs ship only English voices. Feeding Devanagari to an
+      // English voice produces noise, not speech, so read the English answer
+      // instead — understandable beats unintelligible. Silent only if there is
+      // no English text either.
+      let spokenText = text;
+      if (!voice && lang !== "en") {
+        const englishText = btn.dataset.speakEn;
+        const englishVoice = pickVoice(voices, "en");
+        if (englishText && englishVoice) {
+          spokenText = englishText;
+          voice = englishVoice;
+          setSpeakNote(btn, `This device has no ${btn.dataset.langName || "matching"} voice installed, so the English answer is being read aloud instead.`);
+        }
+      }
+
+      // Only when the Hindi text itself is being spoken, not the English fallback.
+      if (spokenText === text && lang.toLowerCase().split("-")[0] === "hi") spokenText = hindiSpokenText(spokenText);
+
+      const utter = new SpeechSynthesisUtterance(spokenText);
+      if (voice) utter.voice = voice;
+      utter.lang = voice ? voice.lang : `${lang}-IN`;
+      utter.rate = 0.95;
+      utter.onend = () => { btn.textContent = SPEAK_LABEL; };
+      utter.onerror = () => { btn.textContent = SPEAK_LABEL; };
+
+      btn.textContent = STOP_LABEL;
+      window.speechSynthesis.speak(utter);
+    }
+
+    askArea.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-speak]");
+      if (!btn) return;
+
+      // Clicking the button that is currently speaking stops it.
+      if (window.speechSynthesis.speaking && btn.textContent === STOP_LABEL) {
+        stopSpeaking();
+        return;
+      }
+
+      speakAnswer(btn);
+    });
+
+    askSubmit.addEventListener("click", async () => {
+      const question = askInput.value.trim();
+      if (!question) return;
+
+      askSubmit.disabled = true;
+      const loadingEl = document.createElement("div");
+      loadingEl.className = "ask-loading-line";
+      loadingEl.innerHTML = '<div class="ask-spinner"></div> Thinking through your question…';
+      askArea.prepend(loadingEl);
+
+      try {
+        const res = await fetch(`${API_BASE}/farmers/${farmerId}/query`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question, language: askLangSelect.value, sessionId })
+        });
+        const data = await res.json();
+        loadingEl.remove();
+
+        if (!res.ok) {
+          const errEl = document.createElement("div");
+          errEl.className = "ask-empty";
+          errEl.textContent = data.error || "Couldn't answer that right now.";
+          askArea.prepend(errEl);
+          return;
+        }
+
+        renderAskAnswer(data);
+        askInput.value = "";
+      } catch (err) {
+        loadingEl.remove();
+        const errEl = document.createElement("div");
+        errEl.className = "ask-empty";
+        errEl.textContent = "Could not reach backend — is it running?";
+        askArea.prepend(errEl);
+      } finally {
+        askSubmit.disabled = false;
+      }
+    });
+
+    document.getElementById("newTopicBtn").addEventListener("click", async () => {
+      const old = sessionId;
+      sessionId = newSessionId();
+      try { sessionStorage.setItem("gg_session", sessionId); } catch (e) { /* the id just lives in memory */ }
+      fetch(`${API_BASE}/farmers/${encodeURIComponent(farmerId)}/conversation?sessionId=${encodeURIComponent(old)}`, { method: "DELETE" }).catch(() => {});
+      const note = document.createElement("div");
+      note.className = "ask-empty";
+      note.textContent = "New topic. Earlier questions are forgotten.";
+      askArea.prepend(note);
+      askInput.focus();
+    });
+
+    askInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        askSubmit.click();
+      }
+    });
+
+    /* ---------- Voice input (record -> Groq Whisper on the backend) ---------- */
+    const micBtn = document.getElementById("micBtn");
+    const micHint = document.getElementById("micHint");
+
+    let mediaRecorder = null;
+    let chunks = [];
+    let stream = null;
+
+    // getUserMedia requires a secure context: https, or localhost/127.0.0.1.
+    const canRecord = Boolean(navigator.mediaDevices?.getUserMedia && window.MediaRecorder);
+    if (!canRecord) {
+      micBtn.disabled = true;
+      micHint.textContent = window.isSecureContext
+        ? "Voice input isn't supported in this browser — you can still type your question."
+        : "Voice input needs https or localhost. Open the site via localhost to use the microphone.";
+    }
+
+    // Pick a container the browser can record AND Groq accepts.
+    function pickMimeType() {
+      const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"];
+      return candidates.find((t) => window.MediaRecorder.isTypeSupported?.(t)) || "";
+    }
+
+    function stopTracks() {
+      if (stream) {
+        stream.getTracks().forEach((t) => t.stop()); // releases the mic indicator
+        stream = null;
+      }
+    }
+
+    async function startRecording() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (err) {
+        micHint.textContent =
+          err.name === "NotAllowedError"
+            ? "Microphone permission was denied. Allow it in your browser settings to ask by voice."
+            : "Could not access the microphone.";
+        return;
+      }
+
+      const mimeType = pickMimeType();
+      mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      chunks = [];
+
+      mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        stopTracks();
+        const blob = new Blob(chunks, { type: mediaRecorder.mimeType || "audio/webm" });
+        if (blob.size > 0) sendVoiceQuestion(blob);
+      };
+
+      mediaRecorder.start();
+      micBtn.classList.add("recording");
+      setMicButton(true);
+      micHint.textContent = "Listening… stops on its own when you finish speaking.";
+      startSilenceWatch();
+    }
+
+    // Swaps only the glyph and label, so the button's structure survives. The
+    // glyph carries the meaning for a farmer who can't read either word.
+    function setMicButton(recording) {
+      const glyph = micBtn.querySelector(".mic-glyph");
+      const label = micBtn.querySelector(".mic-label");
+      if (glyph) glyph.textContent = recording ? "⏹" : "🎤";
+      if (label) label.textContent = recording ? "Stop" : "Speak";
+    }
+
+    /* ---------- Auto-stop on silence ---------- */
+    // A farmer who can't read the "Stop" label has no way to know a second tap
+    // is required, so recording ends itself once they stop talking. Tapping
+    // Stop still works for anyone who prefers it.
+    const SILENCE_RMS = 0.015;       // below this counts as quiet
+    const SILENCE_HOLD_MS = 1800;    // quiet for this long => finished speaking
+    const NO_SPEECH_TIMEOUT_MS = 8000; // nothing said at all => give up
+    const MAX_RECORDING_MS = 30000;  // hard cap so a stuck mic can't run forever
+
+    let audioCtx = null;
+    let silenceRAF = null;
+    let maxTimer = null;
+
+    function stopSilenceWatch() {
+      if (silenceRAF) cancelAnimationFrame(silenceRAF);
+      silenceRAF = null;
+      if (maxTimer) clearTimeout(maxTimer);
+      maxTimer = null;
+      if (audioCtx) {
+        audioCtx.close().catch(() => {});
+        audioCtx = null;
+      }
+    }
+
+    function startSilenceWatch() {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      // Without Web Audio the farmer simply taps Stop, as before.
+      if (!AudioCtx || !stream) return;
+
+      try {
+        audioCtx = new AudioCtx();
+        const source = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 2048;
+        source.connect(analyser);
+
+        const buf = new Float32Array(analyser.fftSize);
+        const startedAt = Date.now();
+        let lastLoudAt = null;
+
+        maxTimer = setTimeout(() => {
+          if (mediaRecorder?.state === "recording") stopRecording();
+        }, MAX_RECORDING_MS);
+
+        const tick = () => {
+          if (mediaRecorder?.state !== "recording") return;
+
+          analyser.getFloatTimeDomainData(buf);
+          let sum = 0;
+          for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+          const rms = Math.sqrt(sum / buf.length);
+
+          const now = Date.now();
+          if (rms > SILENCE_RMS) lastLoudAt = now;
+
+          if (lastLoudAt === null) {
+            // Never heard anything — don't cut off someone who is still
+            // drawing breath, but don't record an empty room indefinitely.
+            if (now - startedAt > NO_SPEECH_TIMEOUT_MS) {
+              micHint.textContent = "Didn't hear anything — tap Speak and try again.";
+              stopRecording();
+              return;
+            }
+          } else if (now - lastLoudAt > SILENCE_HOLD_MS) {
+            stopRecording();
+            return;
+          }
+
+          silenceRAF = requestAnimationFrame(tick);
+        };
+
+        silenceRAF = requestAnimationFrame(tick);
+      } catch (err) {
+        stopSilenceWatch();
+      }
+    }
+
+    function stopRecording() {
+      stopSilenceWatch();
+      if (mediaRecorder?.state === "recording") mediaRecorder.stop();
+      micBtn.classList.remove("recording");
+      setMicButton(false);
+      // Leave a "didn't hear anything" hint in place; clear an active one.
+      if (micHint.textContent.startsWith("Listening")) micHint.textContent = "";
+    }
+
+    micBtn.addEventListener("click", () => {
+      if (mediaRecorder?.state === "recording") stopRecording();
+      else startRecording();
+    });
+
+    async function sendVoiceQuestion(blob) {
+      micBtn.disabled = true;
+      askSubmit.disabled = true;
+
+      const loadingEl = document.createElement("div");
+      loadingEl.className = "ask-loading-line";
+      loadingEl.innerHTML = '<div class="ask-spinner"></div> Transcribing what you said…';
+      askArea.prepend(loadingEl);
+
+      try {
+        const lang = encodeURIComponent(askLangSelect.value || "auto");
+        // Posted as a raw body, not multipart — the backend reads it with
+        // express.raw(), so no upload-parsing dependency is needed.
+        const res = await fetch(`${API_BASE}/farmers/${farmerId}/query/voice?language=${lang}&sessionId=${encodeURIComponent(sessionId)}`, {
+          method: "POST",
+          headers: { "Content-Type": blob.type || "audio/webm" },
+          body: blob
+        });
+        const data = await res.json();
+        loadingEl.remove();
+
+        if (!res.ok) {
+          const errEl = document.createElement("div");
+          errEl.className = "ask-empty";
+          errEl.textContent = data.error || "Couldn't understand that recording.";
+          askArea.prepend(errEl);
+          return;
+        }
+
+        renderAskAnswer(data, { autoSpeak: true });
+      } catch (err) {
+        loadingEl.remove();
+        const errEl = document.createElement("div");
+        errEl.className = "ask-empty";
+        errEl.textContent = "Could not reach backend — is it running?";
+        askArea.prepend(errEl);
+      } finally {
+        micBtn.disabled = false;
+        askSubmit.disabled = false;
+      }
+    }
+
+    window.addEventListener("beforeunload", stopTracks);
+
+    loadLanguages();
+  </script>
+</body>
+</html>

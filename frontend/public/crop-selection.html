@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Selection - Green Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f4f7f5;
+            color: #1c2b24;
+            min-height: 100vh;
+        }
+
+        /* Main Wrapper */
+        .main-wrapper {
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* Main Content Styles */
+        .main {
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            min-height: 100vh;
+        }
+        
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #0e3b2e;
+            padding: 15px 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .topbar h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #a5e1c9;
+        }
+        
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .user img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #0e7a5a;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 999px;
+            font-weight: 600;
+            transition: 0.2s;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn:hover {
+            background: #0b5f46;
+        }
+        
+        /* Container - Made full height */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            flex: 1;
+            min-height: calc(100vh - 200px);
+        }
+        
+        /* Plan Generation Card - Increased height */
+        .plan-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(20, 48, 38, 0.06);
+            padding: 2.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .plan-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .plan-card h2 {
+            color: #0e7a5a;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e7f7ef;
+        }
+        
+        /* Input Form Styling - Library Style */
+        #plan-generation-form {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px 35px;
+            align-items: center;
+            margin-bottom: 30px;
+            flex: 1;
+        }
+        
+        #plan-generation-form label {
+            font-weight: 600;
+            color: #1c2b24;
+            font-size: 1.1rem;
+        }
+        
+        #plan-generation-form select,
+        #plan-generation-form input[type="number"] {
+            width: 100%;
+            padding: 16px 18px;
+            border: 1px solid #cfe3d9;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #f9fdfb;
+            transition: border-color 0.2s;
+            height: 55px;
+        }
+        
+        #plan-generation-form select:focus,
+        #plan-generation-form input[type="number"]:focus {
+            border-color: #0e7a5a;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(14, 122, 90, 0.1);
+        }
+        
+        #plan-generation-form button[type="submit"] {
+            grid-column: 1 / span 2;
+            padding: 18px 20px;
+            background: #0e7a5a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: 0.2s;
+            margin-top: 30px;
+            height: 60px;
+        }
+        
+        #plan-generation-form button[type="submit"]:hover {
+            background: #0b5f46;
+        }
+        
+        /* Output Styling - Library Card Style */
+        #downloadable-plan-content {
+            margin-top: 20px;
+            padding: 25px;
+            background-color: #f8fdf9;
+            border-radius: 12px;
+            border: 1px solid #e7f7ef;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #downloadable-plan-content h2 {
+            color: #0e3b2e;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-left: 10px;
+            border-left: 4px solid #0e7a5a;
+        }
+        
+        #downloadable-plan-content h3 {
+            color: #0e7a5a;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-left: 10px;
+            border-left: 4px solid #0e7a5a;
+        }
+        
+        #downloadable-plan-content ul {
+            list-style: none;
+            margin-left: 0;
+            padding-left: 0;
+        }
+        
+        #downloadable-plan-content li {
+            background-color: #ffffff;
+            padding: 14px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border: 1px solid #e8f2ed;
+            line-height: 1.5;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Cost Output Card */
+        #total-cost-output {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #fff8e1;
+            border-radius: 8px;
+            border: 1px solid #ffcc80;
+        }
+        
+        #total-cost-output h3 {
+            border-left: 4px solid #ff9800;
+        }
+        
+        #total-cost-output p.cost-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #c62828;
+            margin: 10px 0;
+        }
+        
+        #total-cost-output p.disclaimer {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        /* Download Button - Library Style */
+        .btn {
+            display: inline-block;
+            background: #0e7a5a;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: background 0.3s;
+            margin-top: 20px;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            background: #0b5f46;
+        }
+        
+        /* Error Message */
+        #plan-error-message {
+            color: #c62828;
+            font-weight: 600;
+            margin-top: 15px;
+            padding: 12px;
+            background: #ffebee;
+            border-radius: 6px;
+            border-left: 4px solid #c62828;
+            display: none; /* Hide by default */
+        }
+        
+        /* Loading State */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #plan-generation-form {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            #plan-generation-form button[type="submit"] {
+                grid-column: 1;
+            }
+            
+            .topbar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .plan-card {
+                padding: 1.5rem;
+                min-height: 500px;
+            }
+            
+            #downloadable-plan-content {
+                padding: 20px;
+                min-height: 450px;
+            }
+        }
+
+        /* Add this CSS */
+        .gtranslate_wrapper .gt_widget {
+            /* Target the container of the GTranslate elements */
+            margin-left: auto; /* Pushes it to the right */
+            margin-right: 15px; /* Spacing from the user profile */
+            order: 2; /* Position it between the title and the user icon */
+        }
+
+        /* Style the actual dropdown to match the pill-shape/green button in your image */
+        .gtranslate_wrapper select {
+            /* Base styles for the "pill" button */
+            padding: 10px 20px 10px 15px; /* Adjust padding for shape and space for the arrow */
+            border-radius: 999px; /* Makes it a pill shape */
+            border: none; /* Remove default border */
+            font-size: 1rem;
+            font-weight: 600;
+            
+            /* Green Guide brand colors */
+            background-color: #0e7a5a; /* A solid dark green background */
+            color: white; /* White text for contrast */
+            
+            cursor: pointer;
+            height: 40px; /* Consistent height */
+            
+            /* Remove default dropdown appearance for a cleaner look */
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            
+            /* Add a custom arrow using a background image or a hack, 
+                but for simplicity, we rely on the system arrow or custom font if available */
+        }
+
+        /* Adjust topbar for better centering if the wrapper is added */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* ... existing topbar styles */
+        }
+
+        /* Ensure the title container is correct */
+        .topbar .title-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="main">
+           <div class="topbar">
+    <div class="title-container">
+        <h2><i class="fas fa-seedling"></i> Crop Selection - Green Guide</h2>
+    </div>
+    
+    <div class="gtranslate_wrapper"></div>
+    
+    <div class="user">
+        <span id="userName">Loading...</span>
+        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="user">
+    </div>
+</div>
+
+            <div style="padding: 15px 24px 0;">
+                <a href="dashboard.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+            
+            <div class="container">
+                <div class="plan-card">
+                    <h2><i class="fas fa-magic"></i> Generate Personalized Plan</h2>
+                    
+                    <form id="plan-generation-form">
+                        <label for="cropSelect">Crop:</label>
+                        <select id="cropSelect" name="crop_name" required>
+                            <option value="">-- Loading Crops... --</option>
+                            </select>
+
+                        <label for="landArea">Land Area (Acres):</label>
+                        <input type="number" id="landArea" name="land_area" required min="0.1" step="0.1" value="1">
+
+                        <label for="soilSelect">Soil Type:</label>
+                        <select id="soilSelect" name="soil_type" required>
+                            <option value="Loamy">Loamy</option>
+                            <option value="Clay">Clay</option>
+                            <option value="Sandy">Sandy</option>
+                            <option value="Fertile">Fertile/Well-drained</option>
+                            <option value="Deep">Deep/Perennial</option>
+                        </select>
+
+                        <label for="cultivationMethod">Cultivation Method:</label>
+                        <select id="cultivationMethod" name="cultivation_method" required>
+                            <option value="Conventional">Conventional</option>
+                            <option value="Organic">Organic</option>
+                        </select>
+                        
+                        <button type="submit">
+                            <i class="fas fa-cogs"></i> Generate Plan
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="plan-card" id="downloadable-plan-content" style="display: none;">
+                    <h2><i class="fas fa-file-alt"></i> <span id="output-crop-title">Plan</span> Personalized Management Plan</h2>
+                    
+                    <div id="total-cost-output"></div>
+                    <div id="fertilizer-plan-output"></div>
+                    <div id="pest-plan-output"></div>
+                    
+                    <p id="plan-error-message" style="display:none;"></p>
+                    
+                    <div style="text-align: right; margin-top: auto;">
+                        <button id="download-plan-btn" class="btn" style="display: none;">
+                            <i class="fas fa-download"></i> Download Plan as PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================================================================
+        // API ENDPOINTS: Must match your Express server configuration
+        // ====================================================================
+        const API_BASE_URL = 'http://localhost:5000/api';
+        const CROP_LIST_ENDPOINT = `${API_BASE_URL}/crops/unique`;
+        const PLAN_GENERATION_ENDPOINT = `${API_BASE_URL}/crop-plan`; 
+
+        const form = document.getElementById('plan-generation-form');
+        const cropSelect = document.getElementById('cropSelect');
+        const landAreaInput = document.getElementById('landArea');
+        const soilSelect = document.getElementById('soilSelect');
+        const cultivationMethodSelect = document.getElementById('cultivationMethod');
+        
+        const fertilizerOutput = document.getElementById('fertilizer-plan-output');
+        const pestOutput = document.getElementById('pest-plan-output');
+        const totalCostOutput = document.getElementById('total-cost-output');
+        const cropTitle = document.getElementById('output-crop-title');
+        const errorMessage = document.getElementById('plan-error-message');
+        const downloadButton = document.getElementById('download-plan-btn'); 
+        const planOutputCard = document.getElementById('downloadable-plan-content');
+        const userNameElement = document.getElementById('userName');
+
+        let generatedPlanData = null; // Store fetched data for PDF generation
+
+        // ==========================================================
+        // DYNAMIC CROP DROPDOWN POPULATION (NEW LOGIC)
+        // ==========================================================
+        async function loadCrops() {
+            cropSelect.innerHTML = '<option value="">-- Loading Crops... --</option>'; // Initial loading state
+            try {
+                const response = await fetch(CROP_LIST_ENDPOINT);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const uniqueCrops = await response.json();
+
+                // Clear loading state
+                cropSelect.innerHTML = '<option value="">-- Select a Crop --</option>';
+
+                if (uniqueCrops && uniqueCrops.length > 0) {
+                    uniqueCrops.forEach(crop => {
+                        const option = document.createElement('option');
+                        option.value = crop;
+                        option.textContent = crop;
+                        cropSelect.appendChild(option);
+                    });
+                } else {
+                    cropSelect.innerHTML = '<option value="">-- No Crops Found in Database --</option>';
+                }
+
+            } catch (error) {
+                console.error("Error fetching crop list:", error);
+                cropSelect.innerHTML = '<option value="">-- Error Loading Crops --</option>';
+            }
+        }
+
+
+        // ==========================================================
+        // USER AUTHENTICATION/STATE 
+        // ==========================================================
+        function getUserName() {
+            const storedUsername = sessionStorage.getItem('userName'); 
+            return storedUsername || "Guest User";
+        }
+
+        function checkLogin() {
+            const username = getUserName();
+            if (!username || username === "Guest User") {
+                alert("Please login first to generate a plan.");
+                window.location.href = "login.html";
+                return false;
+            }
+            userNameElement.textContent = username;
+            return true;
+        }
+
+        // ==========================================================
+        // MONEY AND QUANTITIES
+        // ==========================================================
+        // Costs arrive from the server already in rupees (the exchange rate is configured on the
+        // server, USD_TO_INR), so this page no longer carries a rate of its own.
+        const rupees = (v) => (v === null || v === undefined) ? "—" : new Intl.NumberFormat("en-IN").format(v);
+
+        // "Needs 55.00 kg (22.26 kg/acre)", or the item's own note when no total can be worked out
+        // (rates per tree or per plant depend on how many you have, so they have no total).
+        function quantityText(item, verb) {
+            if (item.totalQuantityNeeded === null) return (item.note || "No quantity is available for this item").replace(/\.$/, ""); // callers add the full stop
+            const range = item.quantityRange ? ` (between ${item.quantityRange.min} and ${item.quantityRange.max})` : "";
+            const perAcre = item.quantityPerAcre ? ` (${item.quantityPerAcre})` : "";
+            return `${verb} ${item.totalQuantityNeeded}${range} ${item.unit}${perAcre}`;
+        }
+        const costText = (item) => item.estimatedCostINR === null ? "not in the total" : `₹${rupees(item.estimatedCostINR)}`;
+
+        // ==========================================================
+        // FUNCTION TO RENDER PLAN DATA FROM API RESPONSE
+        // ==========================================================
+        function renderPlan(data, landArea, cropName) {
+            generatedPlanData = data; // Store the full data object
+            
+            const totalCostINR = data.plan.totalCostINR;
+
+            cropTitle.textContent = `${cropName} - Personalized`;
+            planOutputCard.style.display = 'flex';
+            errorMessage.style.display = 'none';
+
+            // --- DISPLAY TOTAL COST IN INR ---
+            totalCostOutput.innerHTML = `
+                <h3><i class="fas fa-money-bill-wave"></i> Estimated Total Input Cost</h3>
+                <p class="cost-amount">
+                    ₹${rupees(totalCostINR)} (for ${landArea} acres)
+                </p>
+                <p class="disclaimer">
+                    <i class="fas fa-info-circle"></i> Note: Prices are rough estimates for your land area, converted at ₹${data.plan.exchangeRate.usdToInr} per US dollar. They exclude labor, water, and equipment costs.${data.plan.itemsNotInTotal ? ` ${data.plan.itemsNotInTotal} item(s) are priced per tree or plant and are not in this total.` : ""}
+                </p>
+            `;
+
+            // --- DISPLAY FERTILIZER PLAN ---
+            const fertList = data.plan.fertilizer.map(item => `
+                <li>
+                    <strong>${item.stage} (${item.type}):</strong> ${quantityText(item, "Needs")}.
+                    (Est. Cost: <strong>${costText(item)}</strong>)
+                </li>
+            `).join('');
+
+            fertilizerOutput.innerHTML = `
+                <h3><i class="fas fa-seedling"></i> Fertilizer Recommendations</h3>
+                <ul>${fertList.length > 0 ? fertList : '<li>No specific fertilizer recommendations found for these settings.</li>'}</ul>
+            `;
+
+            // --- DISPLAY PEST & DISEASE PLAN ---
+            const pestList = data.plan.pestsAndDiseases.map(item => `
+                <li>
+                    <strong>${item.pest} (${item.type}):</strong> Use ${item.input} — ${quantityText(item, "about")}.
+                    (Est. Cost: <strong>${costText(item)}</strong>)
+                </li>
+            `).join('');
+
+            pestOutput.innerHTML = `
+                <h3><i class="fas fa-bug"></i> Pest & Disease Management</h3>
+                <ul>${pestList.length > 0 ? pestList : '<li>No specific pest/disease recommendations found for these settings.</li>'}</ul>
+            `;
+            
+            downloadButton.style.display = 'inline-block';
+        }
+
+
+        // ==========================================================
+        // EVENT LISTENER FOR FORM SUBMISSION
+        // ==========================================================
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!checkLogin()) return;
+            
+            // Clear previous results and errors
+            fertilizerOutput.innerHTML = '';
+            pestOutput.innerHTML = '';
+            totalCostOutput.innerHTML = '';
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
+            planOutputCard.style.display = 'none';
+            downloadButton.style.display = 'none';
+
+            // Gather inputs
+            const cropName = cropSelect.value.trim();
+            const landArea = parseFloat(landAreaInput.value);
+            const soilType = soilSelect.value.trim();
+            const cultivationMethod = cultivationMethodSelect.value.trim();
+            
+            // Basic frontend validation
+            if (!cropName || landArea <= 0) {
+                errorMessage.textContent = "Please select a crop and enter a valid land area.";
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Show loading state
+            form.classList.add('loading');
+            cropTitle.textContent = `${cropName} - Generating...`;
+            planOutputCard.style.display = 'flex';
+
+            try {
+                const response = await fetch(PLAN_GENERATION_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        crop_name: cropName,
+                        land_area: landArea,
+                        unit: 'acres',
+                        soil_type: soilType,
+                        cultivation_method: cultivationMethod
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    // This handles non-200 status codes (e.g., 404 for 'No specific plan found')
+                    throw new Error(result.error || result.message || `HTTP error! Status: ${response.status}`);
+                }
+                
+                // Render the data fetched from the MongoDB-backed API
+                renderPlan(result, landArea, cropName);
+
+            } catch (error) {
+                console.error("Plan Generation API Error:", error);
+                cropTitle.textContent = cropName; 
+                errorMessage.textContent = `Error: ${error.message}. Please check console for backend status.`;
+                errorMessage.style.display = 'block';
+                planOutputCard.style.display = 'flex';
+                downloadButton.style.display = 'none';
+            } finally {
+                form.classList.remove('loading');
+            }
+        });
+
+        // ==================== PDF DOWNLOAD LOGIC (FIXED VERSION) ====================
+        downloadButton.addEventListener('click', () => {
+            if (generatedPlanData) {
+                generatePDF(generatedPlanData);
+            } else {
+                alert("Please generate a plan first before downloading.");
+            }
+        });
+
+        function generatePDF(data) {
+            // Data needed for PDF
+            const cropName = cropSelect.value.charAt(0).toUpperCase() + cropSelect.value.slice(1);
+            const landArea = landAreaInput.value;
+            const soilType = soilSelect.value;
+            const cultivationMethod = cultivationMethodSelect.value;
+            const userName = getUserName();
+            
+            const totalCostINR = data.plan.totalCostINR;
+
+            // jsPDF's standard fonts have no rupee sign, so the PDF writes "Rs."
+            const pdfCost = (item) => item.estimatedCostINR === null ? "not in the total" : `Rs. ${rupees(item.estimatedCostINR)}`;
+            const fertilizerItems = data.plan.fertilizer.map(item =>
+                `• ${item.stage} (${item.type}): ${quantityText(item, "Needs")}. (Est. Cost: ${pdfCost(item)})`);
+
+            const pestItems = data.plan.pestsAndDiseases.map(item =>
+                `• ${item.pest} (${item.type}): Use ${item.input} — ${quantityText(item, "about")}. (Est. Cost: ${pdfCost(item)})`);
+            
+            // jsPDF Initialization
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const margin = 15;
+            const contentWidth = pageWidth - (margin * 2);
+            let yPosition = margin;
+            
+            // Colors
+            const primaryColor = [14, 122, 90]; 
+            const secondaryColor = [46, 90, 39]; 
+            
+            // Add header
+            pdf.setFillColor(...primaryColor);
+            pdf.rect(0, 0, pageWidth, 25, 'F');
+            
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFontSize(18);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('GREEN GUIDE', pageWidth / 2, 12, { align: 'center' });
+            
+            pdf.setFontSize(12);
+            pdf.text('Personalized Farming Plan', pageWidth / 2, 19, { align: 'center' });
+            
+            yPosition = 35;
+            
+            // Add crop information section
+            pdf.setFillColor(240, 248, 240);
+            pdf.rect(margin, yPosition, contentWidth, 20, 'F');
+            
+            pdf.setTextColor(...secondaryColor);
+            pdf.setFontSize(16);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text(`${cropName} FARMING PLAN`, margin + 5, yPosition + 8);
+            
+            pdf.setFontSize(9);
+            pdf.setTextColor(100, 100, 100);
+            pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, margin + 5, yPosition + 14);
+            
+            yPosition += 25;
+            
+            // Farm details section
+            pdf.setFontSize(12);
+            pdf.setTextColor(0, 0, 0);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('FARM DETAILS', margin, yPosition);
+            
+            yPosition += 5;
+            
+            pdf.setDrawColor(...primaryColor);
+            pdf.line(margin, yPosition, margin + 40, yPosition);
+            
+            yPosition += 10;
+            
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(10);
+            const farmDetails = [
+                `Crop: ${cropName}`,
+                `Land Area: ${landArea} acres`,
+                `Soil Type: ${soilType}`,
+                `Cultivation Method: ${cultivationMethod}`,
+                `Farmer: ${userName}`
+            ];
+            
+            farmDetails.forEach(detail => {
+                pdf.text(detail, margin, yPosition);
+                yPosition += 6;
+            });
+            
+            yPosition += 10;
+            
+            // Cost summary section
+            pdf.setFillColor(255, 248, 225);
+            pdf.rect(margin, yPosition, contentWidth, 25, 'F');
+            
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(...secondaryColor);
+            pdf.setFontSize(12);
+            pdf.text('ESTIMATED TOTAL INPUT COST', margin + 5, yPosition + 8);
+            
+            pdf.setFontSize(16);
+            pdf.setTextColor(198, 40, 40);
+            pdf.text(`Rs. ${rupees(totalCostINR)}`, pageWidth - margin - 15, yPosition + 8, { align: 'right' });
+            
+            pdf.setFontSize(9);
+            pdf.setTextColor(100, 100, 100);
+            pdf.text(`For ${landArea} acre(s)`, margin + 5, yPosition + 16);
+            pdf.text('Note: Prices are estimates based on standard regional input rates derived from MongoDB.', margin + 5, yPosition + 21);
+            
+            yPosition += 35;
+            
+            // Fertilizer recommendations
+            if (fertilizerItems.length > 0) {
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(...secondaryColor);
+                pdf.setFontSize(12);
+                pdf.text('FERTILIZER RECOMMENDATIONS', margin, yPosition);
+                
+                yPosition += 5;
+                pdf.setDrawColor(...primaryColor);
+                pdf.line(margin, yPosition, margin + 70, yPosition);
+                yPosition += 8;
+                
+                pdf.setFont('helvetica', 'normal');
+                pdf.setFontSize(10);
+                
+                fertilizerItems.forEach(item => {
+                    // Use splitTextToSize to handle long text
+                    const lines = pdf.splitTextToSize(item, contentWidth);
+                    lines.forEach(line => {
+                        if (yPosition > 250) { // Page break check
+                            pdf.addPage();
+                            yPosition = margin;
+                        }
+                        pdf.text(line, margin, yPosition);
+                        yPosition += 5;
+                    });
+                    yPosition += 2; // Extra space after each item
+                });
+                yPosition += 5;
+            }
+            
+            // Check if we need a new page
+            if (yPosition > 250) {
+                pdf.addPage();
+                yPosition = margin;
+            }
+            
+            // Pest management
+            if (pestItems.length > 0) {
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(...secondaryColor);
+                pdf.setFontSize(12);
+                pdf.text('PEST & DISEASE MANAGEMENT', margin, yPosition);
+                
+                yPosition += 5;
+                pdf.setDrawColor(...primaryColor);
+                pdf.line(margin, yPosition, margin + 75, yPosition);
+                yPosition += 8;
+                
+                pdf.setFont('helvetica', 'normal');
+                pdf.setFontSize(10);
+                
+                pestItems.forEach(item => {
+                    // Use splitTextToSize to handle long text
+                    const lines = pdf.splitTextToSize(item, contentWidth);
+                    lines.forEach(line => {
+                        if (yPosition > 250) { // Page break check
+                            pdf.addPage();
+                            yPosition = margin;
+                        }
+                        pdf.text(line, margin, yPosition);
+                        yPosition += 5;
+                    });
+                    yPosition += 2; // Extra space after each item
+                });
+                yPosition += 10;
+            }
+            
+            // Additional recommendations
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(...secondaryColor);
+            pdf.setFontSize(12);
+            pdf.text('ADDITIONAL RECOMMENDATIONS', margin, yPosition);
+            
+            yPosition += 5;
+            pdf.setDrawColor(...primaryColor);
+            pdf.line(margin, yPosition, margin + 75, yPosition);
+            yPosition += 8;
+            
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(10);
+            const additionalItems = [
+                'Test soil pH and nutrient levels before planting',
+                'Implement weekly field scouting schedule',
+                'Maintain proper irrigation scheduling',
+                'Keep detailed records of all inputs and yields',
+                'Monitor crop growth stages regularly',
+                'Consult local agricultural extension services'
+            ];
+            
+            additionalItems.forEach(item => {
+                if (yPosition > 250) { // Page break check
+                    pdf.addPage();
+                    yPosition = margin;
+                }
+                pdf.text('• ' + item, margin, yPosition);
+                yPosition += 5;
+            });
+            
+            yPosition += 15;
+            
+            // Footer
+            if (yPosition > 270) {
+                pdf.addPage();
+                yPosition = margin;
+            }
+
+            pdf.setDrawColor(200, 200, 200);
+            pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+            
+            yPosition += 8;
+            
+            pdf.setFontSize(8);
+            pdf.setTextColor(100, 100, 100);
+            pdf.text('This farming plan is generated by Green Guide Agricultural Solutions.', pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 4;
+            pdf.text('For technical support, contact: support@greenguide.com | Phone: +1 (555) 123-4567', pageWidth / 2, yPosition, { align: 'center' });
+            
+            // Save the PDF
+            const fileName = `GreenGuide_${cropName.replace(/\s+/g, '_')}_Plan_${new Date().toISOString().slice(0, 10)}.pdf`;
+            pdf.save(fileName);
+        }
+
+        // ==========================================================
+        // INITIALIZATION
+        // ==========================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check login status
+            checkLogin();
+            // Load crops dynamically
+            loadCrops();
+        });
+    </script>
+
+    <div class="gtranslate_wrapper"></div>
+<script>window.gtranslateSettings = {"default_language":"en","languages":["en","mr","hi"],"wrapper_selector":".gtranslate_wrapper"}</script>
+<script src="https://cdn.gtranslate.net/widgets/latest/ln.js" defer></script>
+</body>
+</html>

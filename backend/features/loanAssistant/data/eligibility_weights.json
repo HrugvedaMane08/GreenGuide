@@ -1,0 +1,26 @@
+{
+  "featureOrder": [
+    "annualIncome",
+    "requestedAmount",
+    "existingLoans",
+    "creditHistoryOk",
+    "debtToIncomeRatio",
+    "incomePerAcre"
+  ],
+  "weights": {
+    "annualIncome": 7.808625191900634e-06,
+    "requestedAmount": -4.401827035046871e-06,
+    "existingLoans": -3.936656005606575e-06,
+    "creditHistoryOk": 1.7592163693618679,
+    "debtToIncomeRatio": -0.24144086756169567,
+    "incomePerAcre": 4.6917741433210005e-06
+  },
+  "intercept": -1.1636201705652098,
+  "metrics": {
+    "accuracy": 0.8208333333333333,
+    "rocAuc": 0.8546224796224797,
+    "trainSize": 4800,
+    "testSize": 1200
+  },
+  "note": "Logistic regression (v2) trained on synthetic data; areaAcres removed as a standalone feature to avoid a redundant/illogical negative land-size weight - land size's effect is captured only through incomePerAcre. StandardScaler folded into weights so JS inference is a single dot product + sigmoid."
+}

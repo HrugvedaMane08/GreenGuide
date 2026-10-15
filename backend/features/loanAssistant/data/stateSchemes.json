@@ -1,0 +1,28 @@
+{
+  "_comment": [
+    "State government schemes, grouped by state. They are shown only to farmers whose land is in that state (matched on the land record's `state`, ignoring case).",
+    "Maharashtra is empty on purpose: nobody has checked any state scheme against an official source yet, and this app must not state scheme details it has not verified. Add one only from the state's official scheme page.",
+    "To add a scheme: copy `_template` into the state's `schemes` list, fill in every field, set freshness.sourceUrl and freshness.lastVerified from the official page you used, and add its eligibility rules to schemeRules.json under the same id (until you do, the scheme is shown with 'needs more info: no rules defined yet'). Restart the backend.",
+    "A scheme missing a required field is skipped and reported in the server log, never half-shown.",
+    "To add another state, add a key with the state's name exactly as farmers enter it in the land record (e.g. \"Karnataka\")."
+  ],
+  "_template": {
+    "id": "mh-example-scheme (unique, lowercase, prefixed with the state)",
+    "name": "Official scheme name",
+    "category": "income-support | credit | insurance | pension | advisory | subsidy",
+    "description": "One or two plain sentences: what it gives and to whom.",
+    "eligibilityCriteria": ["One line per official criterion"],
+    "requiredDocuments": ["One line per document"],
+    "tags": ["words a farmer might use"],
+    "applicability": ["farm situations it suits, in the words farmer profiles produce (crops, irrigation, small marginal holding...)"],
+    "freshness": {
+      "sourceUrl": "https://the-official-page (REQUIRED before this scheme is trusted)",
+      "lastVerified": "YYYY-MM-DD, the day you checked it",
+      "benefitAmount": { "summary": "what it pays, as the official page states it", "figures": null, "origin": "Official source, checked on the date above." },
+      "todo": []
+    }
+  },
+  "Maharashtra": {
+    "schemes": []
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "_comment": [
+    "Deterministic eligibility rules for every scheme in schemes.json, keyed by scheme id.",
+    "Edit this file to change a rule; no code change is needed. Rules are taken from each scheme's eligibilityCriteria text in schemes.json - check them against the official scheme guidelines before relying on them.",
+    "",
+    "Rule types:",
+    "  landHectares     { max }                   holding size, from areaAcres (1 ha = 2.47105 acres)",
+    "  cropDuration     { allowed:[...] }         crop class from cropProfiles.json: annual | long-duration | perennial",
+    "  ageRange         { min, max }              farmer age in years",
+    "  oneOf            { field, allowed:[...] }  a string field must be one of the values",
+    "  flagFalse        { field }                 an EXCLUSION: true disqualifies, false is fine, missing is unknown",
+    "  purposeKeywords  { keywords:[...] }        the free-text loan purpose must mention one of the words",
+    "  positive         { field }                 a number that must be present and > 0",
+    "",
+    "Every rule: id, type, hard, pass, fail, optionally unknown. hard=true means a failure makes the farmer NOT ELIGIBLE; hard=false means a failure only makes it NEEDS MORE INFO (a limit that varies by state/season, or a keyword match that can miss).",
+    "Messages may use {acres} {hectares} {max} {min} {age} {crop} {duration} {category} {allowed} {value}.",
+    "A rule whose input is missing is 'unknown', and the answer becomes NEEDS MORE INFO naming what is missing.",
+    "",
+    "Verdict for a scheme: any hard failure -> not_eligible; otherwise any unknown or soft failure -> needs_more_info; otherwise eligible."
+  ],
+
+  "fields": {
+    "areaAcres": "your land size",
+    "primaryCrop": "your main crop",
+    "purpose": "what the loan is for",
+    "age": "your age",
+    "landTenure": "whether you own, lease or sharecrop your land",
+    "incomeTaxPayer": "whether you pay income tax",
+    "governmentEmployee": "whether you are or were a government employee above Class IV",
+    "institutionalLandholder": "whether the land is held by an institution",
+    "registeredProfessional": "whether you are a registered professional (doctor, engineer, lawyer, CA)",
+    "coveredBySocialSecurity": "whether you are covered by another statutory social security scheme"
+  },
+
+  "schemes": {
+    "pm-kisan": {
+      "eligibleReason": "You own your land and none of the exclusions apply.",
+      "rules": [
+        {
+          "id": "landTenure", "type": "oneOf", "field": "landTenure", "allowed": ["owner"], "hard": true,
+          "pass": "The land is in your own name, as PM-KISAN requires.",
+          "fail": "PM-KISAN is paid only to landowners, and you farm {value} land."
+        },
+        {
+          "id": "landSize", "type": "landHectares", "max": 2, "hard": false,
+          "pass": "{holding} ({hectares} ha) is within the 2-hectare primary target group.",
+          "fail": "{hectares} ha is above the 2-hectare primary target group; larger holders are not automatically excluded, so confirm with your local office."
+        },
+        {
+          "id": "governmentEmployee", "type": "flagFalse", "field": "governmentEmployee", "hard": true,
+          "pass": "You are not excluded as a government employee.",
+          "fail": "Serving or retired government employees above Class IV are excluded from PM-KISAN."
+        },
+        {
+          "id": "incomeTaxPayer", "type": "flagFalse", "field": "incomeTaxPayer", "hard": true,
+          "pass": "You are not excluded as an income-tax payer.",
+          "fail": "Income-tax payers are excluded from PM-KISAN."
+        },
+        {
+          "id": "registeredProfessional", "type": "flagFalse", "field": "registeredProfessional", "hard": true,
+          "pass": "You are not excluded as a registered professional.",
+          "fail": "Professionals such as doctors, engineers, lawyers and CAs are excluded from PM-KISAN."
+        },
+        {
+          "id": "institutionalLandholder", "type": "flagFalse", "field": "institutionalLandholder", "hard": true,
+          "pass": "The land is not held by an institution.",
+          "fail": "Institutional landholders are excluded from PM-KISAN."
+        }
+      ]
+    },
+
+    "kcc": {
+      "eligibleReason": "Owner-cultivators, tenant farmers and sharecroppers can get a Kisan Credit Card.",
+      "rules": [
+        {
+          "id": "landTenure", "type": "oneOf", "field": "landTenure", "allowed": ["owner", "tenant", "sharecropper"], "hard": true,
+          "pass": "As a {value} farmer you can apply for a Kisan Credit Card.",
+          "fail": "KCC is for farmers who own or cultivate land, and you have told us you do not."
+        }
+      ]
+    },
+
+    "pmfby": {
+      "eligibleReason": "You farm as an owner or tenant and your crop is an annual crop that is normally covered.",
+      "rules": [
+        {
+          "id": "landTenure", "type": "oneOf", "field": "landTenure", "allowed": ["owner", "tenant", "sharecropper"], "hard": true,
+          "pass": "As a {value} farmer you can take crop insurance.",
+          "fail": "Crop insurance is for farmers who own or cultivate the land, and you have told us you do not."
+        },
+        {
+          "id": "cropType", "type": "cropDuration", "allowed": ["annual"], "hard": false,
+          "pass": "{crop} ({duration}, {category}) is within the crop types this scheme covers.",
+          "fail": "{crop} is a {duration} crop, but PMFBY mainly covers {allowed} crops; long-duration and perennial crops are covered only in some states and seasons, so confirm the state notification.",
+          "unknown": "{crop} is not in our crop reference data, so we cannot confirm it is a notified crop."
+        }
+      ]
+    },
+
+    "aif": {
+      "eligibleReason": "Your loan purpose is post-harvest infrastructure, which this fund finances.",
+      "rules": [
+        {
+          "id": "purpose", "type": "purposeKeywords", "hard": false,
+          "keywords": ["warehouse", "godown", "cold storage", "cold chain", "storage", "silo", "grading", "sorting", "packhouse", "pack house", "packing", "processing", "post harvest", "post-harvest", "drying", "ripening", "mill"],
+          "pass": "Your loan purpose (\"{value}\") is post-harvest infrastructure, which AIF funds.",
+          "fail": "AIF only finances post-harvest infrastructure such as warehouses, cold storage and processing units, and \"{value}\" does not look like one; confirm your project qualifies."
+        }
+      ]
+    },
+
+    "interest-subvention": {
+      "eligibleReason": "Your loan is a short-term crop loan, which is what the interest subsidy covers.",
+      "rules": [
+        {
+          "id": "purpose", "type": "purposeKeywords", "hard": false,
+          "keywords": ["crop", "working capital", "seed", "seeds", "fertiliser", "fertilizer", "pesticide", "sowing", "cultivation", "kcc", "kisan credit"],
+          "pass": "Your loan purpose (\"{value}\") is a short-term crop loan, which MISS covers.",
+          "fail": "MISS reduces interest only on short-term crop loans, and \"{value}\" does not look like one; confirm with your bank."
+        }
+      ]
+    },
+
+    "soil-health-card": {
+      "eligibleReason": "You hold land, and the scheme has no income or land-size limit.",
+      "rules": [
+        {
+          "id": "landRecord", "type": "positive", "field": "areaAcres", "hard": true,
+          "pass": "You have a land record ({acres} acres); every landholding farmer is eligible.",
+          "fail": "The Soil Health Card is for farmers who hold land, and the land size recorded is not valid."
+        }
+      ]
+    },
+
+    "pm-kisan-maandhan": {
+      "eligibleReason": "You are aged 18-40, hold up to 2 hectares, and are not excluded.",
+      "rules": [
+        {
+          "id": "age", "type": "ageRange", "min": 18, "max": 40, "hard": true,
+          "pass": "Age {age} is within the 18-40 entry range.",
+          "fail": "Age {age} is outside the 18-40 range for joining the Maandhan pension."
+        },
+        {
+          "id": "landSize", "type": "landHectares", "max": 2, "hard": true,
+          "pass": "{holding} ({hectares} ha) is within the 2-hectare limit.",
+          "fail": "{hectares} ha is above the 2-hectare limit, which is a hard requirement for the Maandhan pension."
+        },
+        {
+          "id": "incomeTaxPayer", "type": "flagFalse", "field": "incomeTaxPayer", "hard": true,
+          "pass": "You are not excluded as an income-tax payer.",
+          "fail": "Income-tax payers cannot join the Maandhan pension."
+        },
+        {
+          "id": "coveredBySocialSecurity", "type": "flagFalse", "field": "coveredBySocialSecurity", "hard": true,
+          "pass": "You are not covered by another statutory social security scheme.",
+          "fail": "People already covered by another statutory social security scheme cannot join the Maandhan pension."
+        }
+      ]
+    }
+  }
+}
